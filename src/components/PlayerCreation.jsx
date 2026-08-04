@@ -104,15 +104,16 @@ export default function PlayerCreation({ onCreate }) {
               </span>
             ))}
           </div>
-          <div className="max-w-md mx-auto mt-2 h-1 bg-surface-card">
+          <div className="max-w-md mx-auto mt-2 h-1 bg-surface-card rounded-full overflow-hidden">
             <div
-              className="h-full bg-ink transition-all duration-500"
-              style={{ width: `${(step / 3) * 100}%` }}
+              className="h-full bg-ink origin-left"
+              style={{ transform: `scaleX(${step / 3})`, transition: 'transform 300ms var(--ease-out)' }}
             />
           </div>
         </div>
 
         <div className="card slide-up p-4 md:p-5">
+          <div key={step} className="step-content">
           {step === 1 && (
             <div>
               <h2 className="text-xl font-bold mb-2">Nome del Giocatore</h2>
@@ -157,7 +158,7 @@ export default function PlayerCreation({ onCreate }) {
                   <button
                     key={n.code}
                     onClick={() => setNationality(n)}
-                    className={`p-2 rounded border transition-colors duration-150 ${selectClass(nationality?.code === n.code)}`}
+                    className={`p-2.5 rounded-lg border transition-[color,background-color,border-color,transform] duration-150 active:scale-[0.97] ${selectClass(nationality?.code === n.code)}`}
                   >
                     <img
                       src={getFlagUrl(n.flag)}
@@ -209,7 +210,7 @@ export default function PlayerCreation({ onCreate }) {
                           className="cursor-pointer hover:opacity-80 transition-opacity"
                         >
                           {selected && (
-                            <circle cx={x} cy={y} r="9" fill="none" stroke="#30d158" strokeWidth="0.7" opacity="0.35" />
+                            <circle cx={x} cy={y} r="9" fill="none" stroke="#30d158" strokeWidth="0.7" opacity="0.35" className="transition-opacity duration-150" />
                           )}
                           <circle
                             cx={x} cy={y} r="6.5"
@@ -278,6 +279,7 @@ export default function PlayerCreation({ onCreate }) {
                 Inizia Carriera!
               </button>
             )}
+          </div>
           </div>
         </div>
 

@@ -11,7 +11,7 @@ const LABELS = {
 
 function MarketCard({ team, kind, compact, onPick }) {
   const { text, cls } = LABELS[kind] || LABELS.transfer;
-  const base = 'bg-surface-soft border border-hairline-strong hover:border-ink rounded transition-colors duration-150 flex items-center gap-3 text-center';
+  const base = 'bg-surface-soft border border-hairline-strong hover:border-ink rounded-lg transition-[color,background-color,border-color,transform] duration-150 active:scale-[0.97] flex items-center gap-3 text-center';
   const sizing = compact
     ? 'flex-1 min-w-0 px-3 py-2'
     : 'w-full p-3 flex-col';

@@ -74,7 +74,7 @@ export default function TeamSwitcher({ currentTeam, playerOverall, onSelect, onC
                         key={team.id}
                         onClick={() => joinable && onSelect({ ...team, leagueId, leagueName: league.name })}
                         disabled={!joinable}
-                        className={`p-3 rounded border transition-colors duration-150 text-left ${
+                        className={`p-3 rounded-lg border transition-[color,background-color,border-color,transform] duration-150 active:scale-[0.97] text-left ${
                           isCurrent
                             ? 'border-success bg-success/10 cursor-default'
                             : joinable
