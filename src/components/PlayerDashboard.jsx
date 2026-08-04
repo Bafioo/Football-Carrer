@@ -368,7 +368,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                   title={player.nationality.name}
                 />
               </div>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5 mb-3">
                 <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-ink text-canvas">
                   {player.role} {role.name}
                 </span>
@@ -380,7 +380,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                 </span>
               </div>
               {player.team ? (
-                <div className="inline-flex items-center justify-center md:justify-start gap-3 bg-surface-soft border border-hairline px-3 py-2 rounded">
+                <div className="flex w-full sm:inline-flex items-center justify-center gap-3 bg-surface-soft border border-hairline px-3 py-2 rounded">
                   <img
                     src={getTeamLogoUrl(player.loanTeam || player.team)}
                     alt={player.loanTeam?.name || player.team.name}
@@ -398,7 +398,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                   </div>
                 </div>
               ) : (
-                <div className="inline-flex items-center gap-3 bg-surface-soft border border-hairline px-3 py-2 rounded">
+                <div className="flex w-full sm:inline-flex items-center justify-center gap-3 bg-surface-soft border border-hairline px-3 py-2 rounded">
                   <div className="w-10 h-10 rounded-full bg-ink text-canvas flex items-center justify-center text-base font-bold">
                     ?
                   </div>
@@ -459,7 +459,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
           )}
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-5 lg:gap-4">
+        <div className="grid lg:grid-cols-4 gap-5 lg:gap-4 stagger-enter">
           {/* Team History */}
           <div className="card">
             <h3 className="text-lg font-bold mb-3">Storico Squadre</h3>
@@ -554,7 +554,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                 const last = row[row.length - 1];
                 const sum = (k) => row.reduce((t, s) => t + (s[k] || 0), 0);
                 return (
-                  <div key={i} className={`flex items-center gap-1.5 px-2 py-1.5 border-b border-hairline text-sm ${last.season === player.season ? 'bg-surface-soft' : ''}`}>
+                  <div key={i} className={`flex items-center gap-1.5 px-2 py-1.5 border-b border-hairline text-sm ${last.season === player.season ? 'bg-surface-soft rounded-lg border-b-transparent' : ''}`}>
                   <span className="w-8 font-bold text-ink">{last.age}a</span>
                     {row.length > 1 && first.team.id !== last.team.id && (
                       <>
@@ -597,7 +597,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
         {/* Year Summary Modal */}
         {yearSummary && (
           <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 fade-in">
-            <div className="bg-canvas border border-ink max-w-lg w-full p-4 md:p-5 max-h-[90vh] overflow-y-auto slide-up">
+            <div className="bg-canvas border border-ink max-w-lg w-full p-4 md:p-5 max-h-[90vh] overflow-y-auto rounded-2xl modal-panel">
               <div className="text-center mb-4">
                 <div className="text-2xl font-black mb-1">
                   Fine Stagione {yearSummary.toSeason}
@@ -676,7 +676,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
         {/* Final Career Summary Modal */}
         {showFinal && (
           <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 fade-in">
-            <div className="bg-canvas border border-ink max-w-lg w-full p-4 md:p-5 max-h-[90vh] overflow-y-auto slide-up">
+            <div className="bg-canvas border border-ink max-w-lg w-full p-4 md:p-5 max-h-[90vh] overflow-y-auto rounded-2xl modal-panel">
               <div className="text-center mb-4">
                 <div className="text-2xl font-black mb-1">Fine Carriera</div>
                 <div className="text-sm text-body">

@@ -16,7 +16,7 @@ export default function TeamSwitcher({ currentTeam, playerOverall, onSelect, onC
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 fade-in" onClick={onClose}>
-      <div className="bg-canvas border border-ink max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col slide-up" onClick={e => e.stopPropagation()}>
+      <div className="bg-canvas border border-ink max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col rounded-2xl modal-panel" onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
           <div>
             <h3 className="text-xl font-bold text-ink">Cambia Squadra</h3>

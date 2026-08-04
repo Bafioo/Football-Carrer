@@ -59,11 +59,11 @@ export default function MarketPanel({ offers, retired, onPick }) {
 
       {/* Mobile: fixed bottom bar */}
       {retired ? (
-        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-canvas border-t border-hairline px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 text-center text-xs text-stone">
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-canvas border-t border-hairline px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 text-center text-xs text-stone rounded-t-2xl shadow-[0_-4px_16px_rgba(0,0,0,0.35)]">
           Carriera conclusa: a 40 anni hai appeso gli scarpini al chiodo.
         </div>
       ) : (
-        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-canvas border-t border-hairline px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2">
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-canvas border-t border-hairline px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 rounded-t-2xl shadow-[0_-4px_16px_rgba(0,0,0,0.35)]">
           <div className="max-w-7xl mx-auto flex items-stretch gap-2">
             {offers.cards.map(({ team, kind }, i) => (
               <MarketCard key={i} team={team} kind={kind} compact onPick={onPick} />
