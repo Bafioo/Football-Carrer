@@ -1,176 +1,231 @@
-# Football Career Sim
+<div align="center">
 
-Simulatore di carriera calcistica in stile "manageriale": crei il tuo calciatore a 16 anni, scegli nazionalita e ruolo (la squadra si trova sul mercato), poi vivi una carriera completa fatta di stagioni simulate, eventi casuali, trasferimenti e prestiti, fino al ritiro a 40 anni. La carriera viene salvata automaticamente nel browser.
+# ⚽ Football Career Sim
 
-## Concetto in breve
+**A managerial style football career simulator — live the life of a legend, one season at a time.**
 
-Il gioco non simula singole partite: simula **stagioni intere**. Ogni scelta nel mercato fa avanzare la carriera: il gioco calcola in automatico partite giocate, gol, assist, parate e clean sheet per l'intero anno (o 2 se giochi 2 stagioni alla volta), tira 1-2 eventi casuali, fa evolvere il "gen" (valutazione del giocatore) e apre il riepilogo con la scelta per l'anno successivo: restare, cambiare squadra o andare in prestito.
+From a raw 16-year-old talent to a 40-year-old icon: pick your nationality, choose your role on the pitch,
+and write your own story through simmed seasons, random events, transfers, and loans.
 
-## Il Gen (Overall)
+<br />
 
-Il gen e il numero che rappresenta la qualita del giocatore (quello che vedi nel cerchio grande in alto).
+![React](https://img.shields.io/badge/React-18.3-61DAFB?logo=react&logoColor=white&style=for-the-badge)
+![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white&style=for-the-badge)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white&style=for-the-badge)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-F7DF1E?logo=javascript&logoColor=black&style=for-the-badge)
+![Status](https://img.shields.io/badge/status-active-30d158?style=for-the-badge)
+![Saves](https://img.shields.io/badge/saves-localStorage-0d1117?style=for-the-badge)
 
-- **Base di partenza: 50** — tutte le stats iniziali sono normalizzate affinche l'overall parta esattamente da 50
-- **Massimo: 99**
-- **Curva per eta** (cambiamento casuale annuale):
-  - **16-25 anni**: crescita random positiva, da +1 a +4 a stagione
-  - **26-30 anni**: nessuna crescita forzata, il gen dipende solo dagli eventi casuali
-  - **31+ anni fino al ritiro**: calo random negativo, da -1 a -3 a stagione
-- **Eventi casuali**: influenzano direttamente il gen:
-  - Eventi positivi: +2/+5 gen
-  - Eventi negativi "da infortunio" (Infortunio, Stiramento): -1/-3 gen
-  - Tutti gli altri eventi (prestazioni deludenti, cartellini, critiche...): **non toccano mai il gen** — hanno effetto solo sulle stats interne, invisibili
-- Il gen non viene mai ricalcolato dalle stats: segue solo la curva di eta e gli eventi
+**No accounts. No servers. No crypto. Just football.** 🎮
 
-## Le statistiche visibili per fascia di ruolo
+<br />
 
-Le vecchie 20 statistiche sono nascoste: restano come meccanica interna (generano il gen di partenza e vengono toccate dagli eventi), ma a schermo vedi solo i numeri di prestazione della tua fascia:
+<!--
+📸 Add your screenshots here:
+![Dashboard](public/screenshots/dashboard.png)
+![Player creation](public/screenshots/create-player.png)
+-->
 
-| Fascia | Statistiche visibili |
-|--------|---------------------|
-| Portiere (GK) | Partite, Parate, Clean sheet, Goal subiti |
-| Attaccanti e Centrocampisti (ST, LW, RW, CAM, CM, CDM, CB, LB, RB) | Partite, Gol, Assist |
+</div>
 
-Il clean sheet esiste solo per il portiere: per tutti gli altri ruoli la statistica non viene nemmeno mostrata.
+---
 
-## Correlazione gen ↔ prestazioni
+## ✨ Why you'll love it
 
-Gol, assist, parate, clean sheet e goal subiti sono **correlati al gen** con una stessa curva a S (smoothstep):
+- 🎯 **Season-based engine** — no tedious match-by-match clicking. Choose your move, watch a whole season unfold.
+- 🌱 **A living "Gen" (OVR)** — your rating grows with an S-curve as you age, peaks in your prime, and declines after 31.
+- 🎲 **24 role-specific events** — hat-tricks, penalty saves, dressing-room bust-ups, and rare injuries that actually cost you rating.
+- 🧠 **Stats that make sense** — goals, assists, cleansheets and saves are all correlated to your rating with a smoothstep formula. No random noise without reason.
+- 🏟️ **Real football world** — 66 clubs, 10 leagues, 41 nationalities, real flags and club logos.
+- 📱 **Responsive UI** — clean dark "manpage" aesthetic, optimized for desktop and mobile.
+- 💾 **Auto-save** — your whole career lives in `localStorage`. Close the tab, come back, pick up exactly where you left off.
 
-```
-t = (gen - 50) / 49        (limitato tra 0 e 1)
-fattore = 1 + t^2 * (3 - 2t)
-```
+---
 
-- Gen 50 → fattore 1.0 (valori base)
-- Gen 70 → fattore ~1.36
-- Gen 80 → fattore ~1.67 (la spinta piu forte)
-- Gen 99 → fattore 2.0 (doppio)
-
-Ogni statistica annuale si calcola cosi:
+## 🎮 The Cycle
 
 ```
-stat = base_del_ruolo * fattore_gen * rumore_casuale
+                 ┌──────────────────────────────┐
+                 │      SEASON SIMULATED         │
+                 │  matches · goals · assists ·  │
+                 │  clean sheets · events · gen  │
+                 └──────────────┬───────────────┘
+                                │
+   create player                ▼
+  (name · flag · role) ──►  season summary  +  next move
+                                │
+                                ▼
+               stay  ──  transfer/sign  ──  loan
 ```
 
-- Il **rumore casuale** va da -25% a +25% (0.75-1.25) ed e **tirato separatamente per ogni statistica**: una stagione puo avere pochi gol ma molti assist, per non rendere il gioco troppo sistematico
-- I **goal subiti** del portiere funzionano al contrario: si dividono per il fattore (gen alto → subisci meno)
+Every choice on the Market instantly advances your career by 1 (or 2) seasons, then hands you the decision again:
+**stay, sign, or go on loan.** Careers start at 16 and end at 40 — a maximum of 24 seasons of glory.
 
-### Coefficienti base per ruolo (a gen 50)
+---
 
-| Ruolo | Gol | Assist |
-|-------|-----|--------|
-| ST | 12 | 5 |
-| LW / RW | 9 | 9 |
-| CAM | 8 | 11 |
-| CM | 6 | 9 |
-| CDM | 2 | 5 |
-| CB | 3 | 1 |
-| LB / RB | 2 | 7 |
-| GK | 0 | 0 |
+## 🌡️ The Gen (OVR rating)
 
-Il portiere ha in piu: **Parate** (base 70/anno) e **Clean sheet** (base 9/anno), sempre scalati dal fattore gen. Le partite giocate sono casuali tra 18 e 34 a stagione, uguali per tutti.
+The big number in the circle. Your player's true quality:
 
-## Le stagioni
+| Age | What happens |
+|-----|--------------|
+| **16 – 25** | 📈 Random growth: **+1 to +4** per season |
+| **26 – 30** | 🧘 Prime: no forced growth, rating moves only via events |
+| **31 – 40** | 📉 Decline: random **-1 to -3** per season |
 
-- La carriera **inizia a 16 anni** e finisce a 40 (24 stagioni al massimo)
-- Alla creazione scegli se avanzare **1 o 2 stagioni alla volta** (select nel primo passo)
-- Avanzando di 2, le due stagioni vengono calcolate di fila e i risultati si sommano in un unico riepilogo
-- Ogni scelta sul mercato simula subito le stagioni e apre il riepilogo: numeri dell'anno, eventi capitati con impatto sul gen, nuovo overall
-- La **sezione Mercato** nella dashboard mostra sempre la scelta per l'anno dopo:
-  - `[x]` Resta al club attuale
-  - `[+]` Firma per una squadra (offerta di trasferimento)
-  - `[ ]` Vai in prestito per un anno (squadra casuale; a fine anno torni al club)
-- All'inizio, senza squadra, il mercato mostra **3 offerte di contratto**: ogni firma ti fa giocare le prime stagioni
+- Starts at **50**, sealed at **99**
+- 🔥 **Positive events**: +2 to +5 Gen
+- 🚑 **Injuries** (the only negative that hurts): -1 to -3 Gen
+- Everything else (red cards, bad form, manager criticism) touches **hidden internal stats only** — never the Gen
 
-### Trasferimenti e prestiti
+### Math behind the magic
 
-- Le squadre hanno **requisiti di gen**: 50+ per la maggior parte, 70+ per i club forti, 80+ per i top club
-- Il **prestito** dura una stagione: l'anno lo giochi nella squadra in prestito (il badge "IN PRESTITO A" appare nell'header) e a fine anno torni automaticamente al club di proprieta
+Performance is correlated to Gen with a smooth **S-curve**:
 
-### Il riassunto carriera
+```text
+t = (Gen - 50) / 49            clamped to [0, 1]
+factor = 1 + t² · (3 - 2t)     smoothstep
+stat = role_base · factor · noise
+```
 
-Nel profilo trovi:
+| Gen | Factor | Effect |
+|-----|--------|--------|
+| 50  | 1.00   | baseline |
+| 70  | ~1.36  | solid |
+| 80  | ~1.67  | peak push |
+| 99  | 2.00   | double production 💪 |
 
-- **Storico Squadre**: ogni squadra con logo, lega e range di stagioni (quella attuale e marcata ORA)
-- **Riassunto Carriera**: totali carriera, miglior stagione, e la tabella "Stagioni" con una riga per anno (o per coppia di anni se giochi a 2 stagioni alla volta) che mostra eta, squadra, e i numeri della tua fascia
-- **Mercato**: le 3 scelte per la prossima stagione (resta / firma / prestito, o 3 contratti all'inizio)
+Each stat rolls its **own noise (±25%)**, so a season can bring few goals but plenty of assists.
+Goalkeepers concede **less** when their rating is high — the factor divides instead of multiplying.
 
-### Fine carriera
+### Base rating coefficients (Gen 50)
 
-A 40 anni si apre il riepilogo finale: gen finale, totali di tutta la carriera, miglior stagione e squadre in cui hai giocato. Il tasto "Riepilogo" (accanto a "Cambia Squadra") lo riapre quando vuoi. Da li puoi partire con una nuova carriera.
+| Role | Goals | Assists |
+|------|:-----:|:-------:|
+| ST          | 12 | 5  |
+| LW / RW     | 9  | 9  |
+| CAM         | 8  | 11 |
+| CM          | 6  | 9  |
+| CDM         | 2  | 5  |
+| CB          | 3  | 1  |
+| LB / RB     | 2  | 7  |
+| GK          | 0  | 0  |
 
-## Gli eventi casuali
+Plus, keepers track **Saves** (base 70/season) and **Clean sheets** (base 9/season), and play 18–34 matches a season like everyone else.
 
-Sono **24 eventi** divisi per fascia di ruolo, cosi che ogni giocatore vive eventi pertinenti:
+---
 
-- **Attaccante** (ST, LW, RW): gol della vittoria, hat-trick, giocate fantastiche, rigori sbagliati...
-- **Centrocampista** (CAM, CM, CDM, CB, LB, RB): assist magici, clean sheet, autogol, diffide...
-- **Portiere** (GK): rigori parati, clean sheet...
-- **Eventi condivisi** (11): allenamenti, infortuni, critiche del mister, interviste, cambi tattici...
+## 🗂️ Roles & Visible Stats
 
-Gli infortuni (gli unici a far perdere gen) sono **rari**: ~25% di probabilita che un evento sia un infortunio. Ogni stagione tirano 1-2 eventi, automaticamente — il giocatore non li attiva mai a mano.
+The classic 20 hidden stats power the engine, but on screen you only see what matters for your position:
 
-## Interfaccia e design
+| Role band | Visible stats |
+|-----------|----------------|
+| 🧤 **GK** | Matches · Saves · Clean sheets · Goals conceded |
+| 🦵 **Outfield** (ST, LW, RW, CAM, CM, CDM, CB, LB, RB) | Matches · Goals · Assists |
 
-L'interfaccia segue lo stile "manpage" del file DESIGN.md (spec estetica di riferimento):
+---
 
-- **Tema scuro**: canvas #171717, testo #fdfcfc, bordi sottili hairline
-- **Un solo font**: JetBrains Mono (titoli e testo), dal design minimale
-- **Niente emoji**: solo codici ruolo (GK, CB, ST...) e parentesi ASCII per gli stati (`[x]`, `[+]`, `[ ]`, `[!]`)
-- **Colori semantici** come segnali: verde = successo, rosso = pericolo, giallo = avviso, blu = info
-- **Selezione ruolo su campo da calcio SVG**: scegli la posizione cliccando direttamente sul campo, tutti e 10 i ruoli visibili senza scroll
+## 🏆 Career Features
 
-## Dati
+### Seasons
+- Career runs **16 → 40** (24 seasons max)
+- Choose at creation: advance **1 or 2 seasons** per decision
+- At 2-per-go, seasons are simulated together and merged into a single summary
 
-- **10 ruoli**: GK, CB, LB, RB, CDM, CM, CAM, LW, RW, ST
-- **41 nazionalita** con bandiere reali (flagpedia.net)
-- **66 squadre in 10 leghe**: Serie A, Premier League, La Liga, Bundesliga, Ligue 1 + Serie B, Championship, La Liga 2, 2. Bundesliga, Ligue 2 — con loghi reali (football-logos.cc, URL con hash immutabile)
-- **20 statistiche interne** (6 principali + 14 dettagliate, valori 1-99): invisibili a schermo, generano il gen iniziale e vengono modificate dagli eventi
-- **24 eventi** divisi in 3 fasce di ruolo
+### Transfers & Loans
+- Clubs have **Gen requirements**: 50+ most clubs, 70+ strong clubs, 80+ top clubs
+- A **loan** lasts one season: you play at the borrowed club (badge in the header) and auto-return to your parent club
+- No team yet? The Market offers **3 contract options** to kick-start your career
 
-## Persistenza
+### Dashboard
+- **Club History** — every club with logo, league, and season span (current marked `NOW`)
+- **Career Recap** — career totals, best season, and the full season-by-season table
+- **Market** — your 3 choices for next season (`stay` / `sign` / `loan`)
 
-La carriera si salva in **localStorage** (chiave `football_career_sim_v1`) a ogni modifica: riaprendo il browser ritrovi esattamente dove eri. Il salvataggio contiene il giocatore con stats, gen, eta, stagione, storico stagioni (per stagione: squadra, partite, gol, assist, parate, clean sheet, subiti), cronologia e prestito attivo.
+### Career End
+At 40, the final summary opens: final Gen, career totals, best season, and every club you wore the shirt for.
+Hit **Restart** and do it all over again. 🔁
 
-## Comandi
+---
+
+## 🎲 Random Events (24)
+
+Role-aware events so your journey always feels real:
+
+- **Attackers** (ST, LW, RW): winning goals, hat-tricks, missed penalties…
+- **Midfield / Defense** (CAM, CM, CDM, CB, LB, RB): magic assists, auto-goals, bookings…
+- **Goalkeepers** (GK): penalty saves, clean sheets…
+- **Shared** (11): training, injuries, manager criticism, interviews, tactical switches…
+
+Injuries — the only Gen-killers — are **rare** (~25% chance an event is one). Each season rolls automatically; you never press a button to trigger them. Perfect for that "hmm, maybe next season" feeling. 😅
+
+---
+
+## 🕹️ Quick Start
 
 ```bash
-npm install        # installa le dipendenze
-npm.cmd run dev    # avvia il dev server (su Windows usa npm.cmd, npm.ps1 e bloccato)
-npm.cmd run build  # build di produzione
-npm.cmd run preview
+npm install          # install dependencies
+npm.cmd run dev      # start dev server (Windows: use npm.cmd — npm.ps1 is blocked)
+npm.cmd run build    # production build
+npm.cmd run preview  # preview the build
 ```
 
-Apri il browser su `http://localhost:5173`
+Then open **http://localhost:5173** — your career awaits. 🏟️
 
-## Struttura del progetto
+---
+
+## 🧱 Tech Stack
+
+| Layer     | Tech |
+|-----------|------|
+| UI        | [React 18](https://react.dev) |
+| Styling   | [Tailwind CSS 3](https://tailwindcss.com) |
+| Build     | [Vite 7](https://vitejs.dev) |
+| Persistence | `localStorage` (`football_career_sim_v1`) |
+| Data      | Static JS modules (no backend) |
+
+## 📁 Project Structure
 
 ```
 src/
 ├── components/
-│   ├── PlayerCreation.jsx    # Creazione in 3 step: nome+avanzamento, nazionalita, ruolo (campo SVG)
-│   ├── PlayerDashboard.jsx   # Dashboard: profilo, riepiloghi, stagioni, mercato con 3 offerte, modali
-│   └── TeamSwitcher.jsx      # Catalogo squadre con requisiti di gen
+│   ├── PlayerCreation.jsx    # 3-step wizard: name, nationality, role (SVG pitch)
+│   ├── PlayerDashboard.jsx   # Dashboard: profile, recap, seasons, Market, modals
+│   └── TeamSwitcher.jsx      # Club catalog with Gen requirements
 ├── data/
-│   ├── nationalities.js      # 41 nazionalita + URL bandiere
-│   ├── roles.js              # 10 ruoli, 20 stats, generazione normalizzata a gen 50, calcolo overall
-│   ├── teams.js              # 66 squadre in 10 leghe + URL loghi reali
-│   └── events.js             # 24 eventi divisi per fascia (attaccante/centrocampista/portiere)
+│   ├── nationalities.js      # 41 nationalities + flag URLs
+│   ├── roles.js              # 10 roles, 20 internal stats, OVR calc
+│   ├── teams.js              # 66 clubs / 10 leagues + real logo URLs
+│   └── events.js             # 24 events split by role band
 ├── utils/
-│   ├── gen.js                # Funzione pura genFactor (curva a S) + seasonNoise (+-25%)
-│   └── storage.js            # Salvataggio/lettura/cancellazione localStorage
-├── App.jsx                   # Stato carriera e routing creazione/dashboard
+│   ├── gen.js                # Pure S-curve genFactor + season noise
+│   └── storage.js            # localStorage save / load / clear
+├── App.jsx                   # Career state & creation ⇄ dashboard routing
 ├── main.jsx                  # Entry point
-└── index.css                 # Tailwind + componenti custom (btn, card, text-input)
+└── index.css                 # Tailwind + custom components
 ```
 
-## Risorse esterne
+---
 
-- **Bandiere**: [flagpedia.net](https://flagpedia.net) — `https://flagpedia.net/data/flags/normal/{code}.png`
-- **Loghi squadre**: [football-logos.cc](https://football-logos.cc) — `https://assets.football-logos.cc/logos/{country}/{size}/{slug}.{hash}.png` (gli hash non vanno rigenerati: ognuno e legato al logo)
-- **Fallback loghi**: SVG placeholder inline in caso di errore di caricamento
+## 🌐 Data Sources
 
-## Licenza
+- **Flags** — [flagpedia.net](https://flagpedia.net) · `https://flagpedia.net/data/flags/normal/{code}.png`
+- **Club logos** — [football-logos.cc](https://football-logos.cc) · `https://assets.football-logos.cc/logos/{country}/{size}/{slug}.{hash}.png`
+- **Logo fallback** — inline SVG placeholder when a request fails gracefully
 
-Progetto personale - uso libero
+---
+
+## 🛡️ Security Notes
+
+- Content-Security-Policy locks scripts, styles, fonts, and images to trusted origins
+- Zero network calls to the player — everything is local and deterministic
+- Clean `npm audit` (0 vulnerabilities)
+
+---
+
+<div align="center">
+
+Made with ⚽ and ☕ · **Football Career Sim**
+
+</div>
