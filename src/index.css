@@ -2,24 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
 @layer base {
   body {
     @apply bg-canvas text-ink min-h-screen font-sans antialiased overflow-x-hidden;
+  }
+  button {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .bg-surface-soft {
+    border-radius: 0.5rem;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-ink text-canvas font-bold py-3 px-6 rounded transition-colors duration-150 active:bg-ink-deep;
+    @apply bg-ink text-canvas font-bold py-3 px-6 rounded-lg transition-transform duration-150 active:scale-[0.97] active:bg-ink-deep;
   }
   .btn-secondary {
-    @apply bg-canvas text-ink font-semibold py-2 px-4 rounded border border-hairline-strong transition-colors duration-150 hover:bg-surface-soft active:bg-surface-card;
+    @apply bg-canvas text-ink font-semibold py-2.5 sm:py-2 px-4 rounded-lg border border-hairline-strong transition-[background-color,transform] duration-150 hover:bg-surface-soft active:bg-surface-card active:scale-[0.97];
   }
   .btn-danger {
-    @apply bg-danger text-white font-semibold py-2 px-4 rounded transition-colors duration-150 hover:bg-danger-hover active:bg-danger-hover;
+    @apply bg-danger text-white font-semibold py-2.5 sm:py-2 px-4 rounded-lg transition-[background-color,transform] duration-150 hover:bg-danger-hover active:bg-danger-hover active:scale-[0.97];
   }
   .card {
-    @apply bg-canvas border border-hairline p-4 md:p-6;
+    @apply bg-canvas border border-hairline p-4 md:p-6 rounded-xl shadow-[0_1px_2px_rgba(0,0,0,0.4)];
   }
   .text-input {
     @apply w-full bg-surface-soft text-ink border border-hairline-strong focus:border-ink rounded px-4 py-3 outline-none placeholder:text-ash;
@@ -53,10 +64,32 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
-.fade-in { animation: fade-in 0.2s ease-out; }
+.fade-in { animation: fade-in 200ms ease-out; }
 
 @keyframes slide-up {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.slide-up { animation: slide-up 0.25s ease-out; }
+.slide-up { animation: slide-up 250ms var(--ease-out); }
+
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.95) translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.modal-panel { animation: modal-in 250ms var(--ease-out); }
+
+@keyframes step-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.step-content { animation: step-in 220ms var(--ease-out); }
+
+.stagger-enter > * { animation: slide-up 250ms var(--ease-out) backwards; }
+.stagger-enter > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-enter > *:nth-child(3) { animation-delay: 100ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .slide-up, .modal-panel, .step-content, .stagger-enter > * {
+    animation: fade-in 200ms ease-out;
+  }
+}
