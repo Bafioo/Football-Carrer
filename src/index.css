@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-canvas text-ink min-h-screen font-sans antialiased overflow-x-hidden;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-ink text-canvas font-bold py-3 px-6 rounded transition-colors duration-150 active:bg-ink-deep;
+  }
+  .btn-secondary {
+    @apply bg-canvas text-ink font-semibold py-2 px-4 rounded border border-hairline-strong transition-colors duration-150 hover:bg-surface-soft active:bg-surface-card;
+  }
+  .btn-danger {
+    @apply bg-danger text-white font-semibold py-2 px-4 rounded transition-colors duration-150 hover:bg-danger-hover active:bg-danger-hover;
+  }
+  .card {
+    @apply bg-canvas border border-hairline p-4 md:p-6;
+  }
+  .text-input {
+    @apply w-full bg-surface-soft text-ink border border-hairline-strong focus:border-ink rounded px-4 py-3 outline-none placeholder:text-ash;
+  }
+  .stat-bar {
+    @apply h-1.5 bg-surface-card;
+  }
+  .stat-fill {
+    @apply h-full transition-all duration-500;
+  }
+}
+
+/* Spacing between stat box number and its label */
+.bg-surface-soft .text-xl + .text-xs,
+.bg-surface-soft .text-2xl + .text-xs {
+  @apply mt-1;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #171717; }
+::-webkit-scrollbar-thumb { background: #3a3a3c; }
+::-webkit-scrollbar-thumb:hover { background: #48484a; }
+
+@media (pointer: coarse) {
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+}
+
+/* Animations */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.fade-in { animation: fade-in 0.2s ease-out; }
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.slide-up { animation: slide-up 0.25s ease-out; }
