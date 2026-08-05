@@ -98,6 +98,19 @@ stat = role_base · factor · noise
 Each stat rolls its **own noise (±25%)**, so a season can bring few goals but plenty of assists.
 Goalkeepers concede **less** when their rating is high — the factor divides instead of multiplying.
 
+### 🏟️ Team strength matters
+
+Your club's level scales your production — the same player scores far more at a top club than at a minnow:
+
+| Club requirement (OVR) | Production factor |
+|------------------------|:-----------------:|
+| 80+ (top clubs)        | **×1.25**          |
+| 70+ (strong clubs)     | **×1.05**          |
+| 50 (rest of clubs)     | **×0.75**          |
+
+Goals, assists, saves and clean sheets scale up (or down); keepers at big clubs also concede **less**.
+Loans count too — the club you actually play for decides your factor.
+
 ### Base rating coefficients (Gen 50)
 
 | Role | Goals | Assists |

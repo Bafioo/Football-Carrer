@@ -9,6 +9,10 @@ import MarketPanel from './MarketPanel';
 
 const LOGO_FALLBACK = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23d4d2d2"/></svg>';
 
+// Club strength affects season production: small clubs ~25% less,
+// top clubs ~25% more. Keyed by the club OVR requirement (50/70/80).
+const TEAM_FACTORS = { 50: 0.75, 70: 1.05, 80: 1.25 };
+
 const ROLE_COEFFS = {
   ST:  { goals: 16, assists: 5,  cleanSheets: 0 },
   LW:  { goals: 10,  assists: 12,  cleanSheets: 0 },
@@ -119,17 +123,20 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
       const isGk = p.role === 'GK';
       const coeffs = ROLE_COEFFS[p.role] || ROLE_COEFFS.ST;
       const f = genFactor(p.overall);
+      const teamFactor = (p.loanTeam || p.team)
+        ? (TEAM_FACTORS[getTeamRequirement((p.loanTeam || p.team).name)] ?? 1)
+        : 1;
 
       const matches = Math.max(18, Math.min(100, Math.round(30 * f * seasonNoise())));
       const clampToMatches = (n) => Math.max(0, Math.min(matches, n));
-      const goals = clampToMatches(Math.round(coeffs.goals * f * seasonNoise()));
-      const assists = clampToMatches(Math.round(coeffs.assists * f * seasonNoise()));
-      const cleanSheets = clampToMatches(Math.round(coeffs.cleanSheets * f * seasonNoise()));
+      const goals = clampToMatches(Math.round(coeffs.goals * f * seasonNoise() * teamFactor));
+      const assists = clampToMatches(Math.round(coeffs.assists * f * seasonNoise() * teamFactor));
+      const cleanSheets = clampToMatches(Math.round(coeffs.cleanSheets * f * seasonNoise() * teamFactor));
       const saves = isGk
-        ? Math.max(0, Math.min(matches * 8, Math.round(70 * f * seasonNoise())))
+        ? Math.max(0, Math.min(matches * 8, Math.round(70 * f * seasonNoise() * teamFactor)))
         : 0;
       const goalsConceded = isGk
-        ? Math.max(0, Math.min(matches * 4, Math.round(45 / f * seasonNoise())))
+        ? Math.max(0, Math.min(matches * 4, Math.round(45 / f * seasonNoise() / teamFactor)))
         : 0;
 
       // 1-2 random events during the year
