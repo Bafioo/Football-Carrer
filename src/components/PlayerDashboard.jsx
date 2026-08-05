@@ -134,10 +134,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
 
       const matches = Math.max(18, Math.min(100, Math.round(30 * f * seasonNoise())));
       const clampToMatches = (n) => Math.max(0, Math.min(matches, n));
-      // Defenders always chip in at least one goal a season (1 is more
-      // likely than 0 for them).
-      const goalsRaw = Math.round(coeffs.goals * f * seasonNoise() * teamFactor * seasonShape);
-      const goals = clampToMatches(['CB', 'LB', 'RB'].includes(p.role) ? Math.max(1, goalsRaw) : goalsRaw);
+      const goals = clampToMatches(Math.round(coeffs.goals * f * seasonNoise() * teamFactor * seasonShape));
       const assists = clampToMatches(Math.round(coeffs.assists * f * seasonNoise() * teamFactor * seasonShape));
       const cleanSheets = clampToMatches(Math.round(coeffs.cleanSheets * f * seasonNoise() * teamFactor));
       const saves = isGk
