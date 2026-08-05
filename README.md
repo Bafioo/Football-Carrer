@@ -111,6 +111,11 @@ Your club's level scales your production — the same player scores far more at 
 Goals, assists, saves and clean sheets scale up (or down); keepers at big clubs also concede **less**.
 Loans count too — the club you actually play for decides your factor.
 
+### 📉 No guaranteed glory
+
+Even at a top club, roughly **1 in 5 seasons** comes out flat for outfield players: production drops to
+50–65% for that year. A big transfer raises your ceiling — it doesn't remove your off days. Goalkeepers are exempt.
+
 ### Base rating coefficients (Gen 50)
 
 | Role | Goals | Assists |

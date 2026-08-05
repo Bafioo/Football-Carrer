@@ -20,9 +20,9 @@ const ROLE_COEFFS = {
   CAM: { goals: 8,  assists: 11, cleanSheets: 0 },
   CM:  { goals: 6,  assists: 9,  cleanSheets: 0 },
   CDM: { goals: 2,  assists: 5,  cleanSheets: 0 },
-  CB:  { goals: 3,  assists: 1,  cleanSheets: 0 },
-  LB:  { goals: 2,  assists: 7,  cleanSheets: 0 },
-  RB:  { goals: 2,  assists: 7,  cleanSheets: 0 },
+  CB:  { goals: 1,  assists: 1,  cleanSheets: 0 },
+  LB:  { goals: 1,  assists: 3,  cleanSheets: 0 },
+  RB:  { goals: 1,  assists: 3,  cleanSheets: 0 },
   GK:  { goals: 0,  assists: 0,  cleanSheets: 9 },
 };
 
@@ -126,11 +126,16 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
       const teamFactor = (p.loanTeam || p.team)
         ? (TEAM_FACTORS[getTeamRequirement((p.loanTeam || p.team).name)] ?? 1)
         : 1;
+      // 20% of outfield seasons are flat (50-65% production): even top clubs
+      // can have a poor year. Goalkeepers are exempt.
+      const seasonShape = isGk || Math.random() > 0.2
+        ? 1
+        : 0.5 + Math.random() * 0.15;
 
       const matches = Math.max(18, Math.min(100, Math.round(30 * f * seasonNoise())));
       const clampToMatches = (n) => Math.max(0, Math.min(matches, n));
-      const goals = clampToMatches(Math.round(coeffs.goals * f * seasonNoise() * teamFactor));
-      const assists = clampToMatches(Math.round(coeffs.assists * f * seasonNoise() * teamFactor));
+      const goals = clampToMatches(Math.round(coeffs.goals * f * seasonNoise() * teamFactor * seasonShape));
+      const assists = clampToMatches(Math.round(coeffs.assists * f * seasonNoise() * teamFactor * seasonShape));
       const cleanSheets = clampToMatches(Math.round(coeffs.cleanSheets * f * seasonNoise() * teamFactor));
       const saves = isGk
         ? Math.max(0, Math.min(matches * 8, Math.round(70 * f * seasonNoise() * teamFactor)))
