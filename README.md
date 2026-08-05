@@ -125,9 +125,9 @@ No stat has a floor: even defenders can draw a blank.
 | LW / RW     | 10 | 12 |
 | CAM         | 8  | 11 |
 | CM          | 6  | 9  |
-| CDM         | 5  | 5  |
-| CB          | 7  | 1  |
-| LB / RB     | 6  | 7  |
+| CDM         | 4  | 5  |
+| CB          | 6  | 1  |
+| LB / RB     | 5  | 7  |
 | GK          | 0  | 0  |
 
 Plus, keepers track **Saves** (base 70/season) and **Clean sheets** (base 9/season), and play 18–34 matches a season like everyone else.
