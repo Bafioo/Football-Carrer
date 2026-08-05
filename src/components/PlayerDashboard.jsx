@@ -703,9 +703,6 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                   Stagione {player.season} - a {player.age} anni hai appeso gli scarpini al chiodo
                 </div>
                 <div className="text-sm text-body mt-1">
-                  Gen finale: <span className="text-ink font-bold">{player.overall}</span>
-                </div>
-                <div className="text-sm text-body mt-1">
                   Gen max di tutte le carriere: <span className="text-warning font-bold">{maxGenEver}</span>
                 </div>
               </div>
