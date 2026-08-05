@@ -132,7 +132,7 @@ No stat has a floor: even defenders can draw a blank.
 
 Plus, keepers track **Saves** (base 70/season) and **Clean sheets** (base 9/season), and play matches a season like everyone else.
 
-Match appearances are age-aware: teenagers start around half a season and grow into the team by ~20, veterans taper off after 30, and an injury in the year cuts appearances hard.
+Match appearances scale with **overall rating** (~30 games at gen 50, 75+ at gen 90+), are age-aware (teenagers start around half a season and grow into the team by ~20, veterans taper off after 30), and an injury in the year cuts appearances hard.
 
 ---
 

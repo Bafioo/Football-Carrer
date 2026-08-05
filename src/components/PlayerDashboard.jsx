@@ -159,10 +159,12 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
         events.push({ title: event.title, type: event.type, description: event.description, changes: event.statChanges, genChange });
       }
 
-      // Match availability: young and ageing players play less, and an
-      // injury in the year cuts appearances hard.
+      // Match availability: the stronger the player, the more he plays
+      // (f to the power 1.4: ~30 games at gen 50, ~75+ at gen 90+);
+      // teens and ageing players sit out more, and an injury in the year
+      // cuts appearances hard.
       const injured = events.some(e => e.genChange < 0);
-      const matches = Math.max(4, Math.min(100, Math.round(30 * f * seasonNoise() * ageAvailability(p.age) * (injured ? 0.55 : 1))));
+      const matches = Math.max(4, Math.min(100, Math.round(30 * Math.pow(f, 1.4) * seasonNoise() * ageAvailability(p.age) * (injured ? 0.55 : 1))));
       const clampToMatches = (n) => Math.max(0, Math.min(matches, n));
       const goals = clampToMatches(Math.round(coeffs.goals * f * seasonNoise() * teamFactor * seasonShape));
       const assists = clampToMatches(Math.round(coeffs.assists * f * seasonNoise() * teamFactor * seasonShape));
