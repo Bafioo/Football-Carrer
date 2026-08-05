@@ -19,10 +19,10 @@ const ROLE_COEFFS = {
   RW:  { goals: 10,  assists: 12,  cleanSheets: 0 },
   CAM: { goals: 8,  assists: 11, cleanSheets: 0 },
   CM:  { goals: 6,  assists: 9,  cleanSheets: 0 },
-  CDM: { goals: 2,  assists: 5,  cleanSheets: 0 },
-  CB:  { goals: 1,  assists: 1,  cleanSheets: 0 },
-  LB:  { goals: 1,  assists: 3,  cleanSheets: 0 },
-  RB:  { goals: 1,  assists: 3,  cleanSheets: 0 },
+  CDM: { goals: 4,  assists: 5,  cleanSheets: 0 },
+  CB:  { goals: 6,  assists: 1,  cleanSheets: 0 },
+  LB:  { goals: 5,  assists: 7,  cleanSheets: 0 },
+  RB:  { goals: 5,  assists: 7,  cleanSheets: 0 },
   GK:  { goals: 0,  assists: 0,  cleanSheets: 9 },
 };
 

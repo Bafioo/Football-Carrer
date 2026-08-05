@@ -120,13 +120,13 @@ Even at a top club, roughly **1 in 5 seasons** comes out flat for outfield playe
 
 | Role | Goals | Assists |
 |------|:-----:|:-------:|
-| ST          | 12 | 5  |
-| LW / RW     | 9  | 9  |
+| ST          | 16 | 5  |
+| LW / RW     | 10 | 12 |
 | CAM         | 8  | 11 |
 | CM          | 6  | 9  |
-| CDM         | 2  | 5  |
-| CB          | 3  | 1  |
-| LB / RB     | 2  | 7  |
+| CDM         | 4  | 5  |
+| CB          | 6  | 1  |
+| LB / RB     | 5  | 7  |
 | GK          | 0  | 0  |
 
 Plus, keepers track **Saves** (base 70/season) and **Clean sheets** (base 9/season), and play 18–34 matches a season like everyone else.
