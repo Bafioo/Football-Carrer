@@ -4,6 +4,7 @@ import { getFlagUrl } from '../data/nationalities';
 import { getTeamLogoUrl, getAllTeams, getTeamRequirement } from '../data/teams';
 import { getRandomEvent } from '../data/events';
 import { genFactor, seasonNoise } from '../utils/gen';
+import { loadMaxGen, saveMaxGen } from '../utils/storage';
 import TeamSwitcher from './TeamSwitcher';
 import MarketPanel from './MarketPanel';
 
@@ -20,9 +21,9 @@ const ROLE_COEFFS = {
   CAM: { goals: 8,  assists: 11, cleanSheets: 0 },
   CM:  { goals: 6,  assists: 9,  cleanSheets: 0 },
   CDM: { goals: 0.5, assists: 5,  cleanSheets: 0 },
-  CB:  { goals: 0.5, assists: 1,  cleanSheets: 0 },
-  LB:  { goals: 0.5, assists: 7,  cleanSheets: 0 },
-  RB:  { goals: 0.5, assists: 7,  cleanSheets: 0 },
+  CB:  { goals: 0.5, assists: 0.5,  cleanSheets: 0 },
+  LB:  { goals: 0.5, assists: 2,  cleanSheets: 0 },
+  RB:  { goals: 0.5, assists: 2,  cleanSheets: 0 },
   GK:  { goals: 0,  assists: 0,  cleanSheets: 9 },
 };
 
@@ -31,6 +32,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
   const [yearSummary, setYearSummary] = useState(null);
   const [showFinal, setShowFinal] = useState(false);
   const [offers, setOffers] = useState(null);
+  const [maxGenEver, setMaxGenEver] = useState(() => Math.max(loadMaxGen(), player.overall || 0));
 
   // Build the 3 possible moves for the current player state.
   // Teamless: 3 join offers. Teamed: stay / transfer / loan.
@@ -116,6 +118,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
   const simulateSeasons = (count, base) => {
     let p = { ...(base || player) };
     const agg = { matches: 0, goals: 0, assists: 0, cleanSheets: 0, saves: 0, goalsConceded: 0, events: [], loaned: false, years: 0, toSeason: p.season };
+    let peakGen = maxGenEver;
 
     for (let i = 0; i < count; i++) {
       if (p.age >= 40) break;
@@ -170,6 +173,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
         genShift = -(1 + Math.floor(Math.random() * 3)); // -1..-3, random negative
       }
       const newOverall = Math.max(1, Math.min(99, p.overall + genShift + eventImpact));
+      if (newOverall > peakGen) peakGen = newOverall;
 
       const wasLoaned = !!p.loanTeam;
       const history = [...p.history];
@@ -240,6 +244,10 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
     }
 
     if (agg.years === 0) return;
+    if (peakGen > maxGenEver) {
+      setMaxGenEver(peakGen);
+      saveMaxGen(peakGen);
+    }
     onUpdate(p);
     if (p.age >= 40) {
       setShowFinal(true);
@@ -696,6 +704,9 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                 </div>
                 <div className="text-sm text-body mt-1">
                   Gen finale: <span className="text-ink font-bold">{player.overall}</span>
+                </div>
+                <div className="text-sm text-body mt-1">
+                  Gen max di tutte le carriere: <span className="text-warning font-bold">{maxGenEver}</span>
                 </div>
               </div>
 
