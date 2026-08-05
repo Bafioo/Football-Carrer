@@ -115,6 +115,7 @@ Loans count too — the club you actually play for decides your factor.
 
 Even at a top club, roughly **1 in 5 seasons** comes out flat for outfield players: production drops to
 50–65% for that year. A big transfer raises your ceiling — it doesn't remove your off days. Goalkeepers are exempt.
+Defenders (CB, LB, RB) always chip in at least **1 goal** per season, no matter how flat the year is.
 
 ### Base rating coefficients (Gen 50)
 
