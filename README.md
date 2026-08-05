@@ -126,11 +126,13 @@ No stat has a floor: even defenders can draw a blank.
 | CAM         | 8  | 11 |
 | CM          | 6  | 9  |
 | CDM         | 0.5 | 5  |
-| CB          | 0.5 | 1  |
-| LB / RB     | 0.5 | 7  |
+| CB          | 0.5 | 0.5 |
+| LB / RB     | 0.5 | 2  |
 | GK          | 0  | 0  |
 
-Plus, keepers track **Saves** (base 70/season) and **Clean sheets** (base 9/season), and play 18–34 matches a season like everyone else.
+Plus, keepers track **Saves** (base 70/season) and **Clean sheets** (base 9/season), and play matches a season like everyone else.
+
+Match appearances are age-aware: teenagers start around half a season and grow into the team by ~20, veterans taper off after 30, and an injury in the year cuts appearances hard.
 
 ---
 

@@ -14,6 +14,13 @@ const LOGO_FALLBACK = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/200
 // top clubs ~25% more. Keyed by the club OVR requirement (50/70/80).
 const TEAM_FACTORS = { 50: 0.75, 70: 1.05, 80: 1.25 };
 
+// Match availability by age: teens and ageing players sit out more.
+const ageAvailability = (age) => {
+  if (age <= 20) return 0.5 + (age - 16) * 0.1; // 16yo ~half the games, 20yo ~90%
+  if (age >= 31) return Math.max(0.3, 1 - (age - 30) * 0.08); // tapers to ~30% at 39
+  return 1;
+};
+
 const ROLE_COEFFS = {
   ST:  { goals: 16, assists: 5,  cleanSheets: 0 },
   LW:  { goals: 10,  assists: 12,  cleanSheets: 0 },
@@ -135,18 +142,6 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
         ? 1
         : 0.5 + Math.random() * 0.15;
 
-      const matches = Math.max(18, Math.min(100, Math.round(30 * f * seasonNoise())));
-      const clampToMatches = (n) => Math.max(0, Math.min(matches, n));
-      const goals = clampToMatches(Math.round(coeffs.goals * f * seasonNoise() * teamFactor * seasonShape));
-      const assists = clampToMatches(Math.round(coeffs.assists * f * seasonNoise() * teamFactor * seasonShape));
-      const cleanSheets = clampToMatches(Math.round(coeffs.cleanSheets * f * seasonNoise() * teamFactor));
-      const saves = isGk
-        ? Math.max(0, Math.min(matches * 8, Math.round(70 * f * seasonNoise() * teamFactor)))
-        : 0;
-      const goalsConceded = isGk
-        ? Math.max(0, Math.min(matches * 4, Math.round(45 / f * seasonNoise() / teamFactor)))
-        : 0;
-
       // 1-2 random events during the year
       const eventCount = 1 + (Math.random() < 0.5 ? 1 : 0);
       const newStats = { ...p.stats };
@@ -163,6 +158,21 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
             : 0;                                  // others never touch gen
         events.push({ title: event.title, type: event.type, description: event.description, changes: event.statChanges, genChange });
       }
+
+      // Match availability: young and ageing players play less, and an
+      // injury in the year cuts appearances hard.
+      const injured = events.some(e => e.genChange < 0);
+      const matches = Math.max(4, Math.min(100, Math.round(30 * f * seasonNoise() * ageAvailability(p.age) * (injured ? 0.55 : 1))));
+      const clampToMatches = (n) => Math.max(0, Math.min(matches, n));
+      const goals = clampToMatches(Math.round(coeffs.goals * f * seasonNoise() * teamFactor * seasonShape));
+      const assists = clampToMatches(Math.round(coeffs.assists * f * seasonNoise() * teamFactor * seasonShape));
+      const cleanSheets = clampToMatches(Math.round(coeffs.cleanSheets * f * seasonNoise() * teamFactor));
+      const saves = isGk
+        ? Math.max(0, Math.min(matches * 8, Math.round(70 * f * seasonNoise() * teamFactor)))
+        : 0;
+      const goalsConceded = isGk
+        ? Math.max(0, Math.min(matches * 4, Math.round(45 / f * seasonNoise() / teamFactor)))
+        : 0;
 
       // Gen: only age-curve shift + event genChange, never stat noise
       const eventImpact = events.reduce((t, e) => t + e.genChange, 0);
