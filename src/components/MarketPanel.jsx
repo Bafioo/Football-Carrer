@@ -1,5 +1,4 @@
 import { LEAGUES, getTeamLogoUrl } from '../data/teams';
-import { NATIONALITIES, getFlagUrl } from '../data/nationalities';
 
 const LOGO_FALLBACK = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23d4d2d2"/></svg>';
 
@@ -13,7 +12,6 @@ const LABELS = {
 function MarketCard({ team, kind, compact, onPick }) {
   const { text, cls } = LABELS[kind] || LABELS.transfer;
   const league = LEAGUES[team.leagueId];
-  const nat = league && NATIONALITIES.find(n => n.name === league.country);
   const base = 'bg-surface-soft border border-hairline-strong hover:border-ink rounded-lg transition-[color,background-color,border-color,transform] duration-150 active:scale-[0.97] flex flex-col items-center text-center';
   const sizing = compact ? 'flex-1 min-w-0 px-2 py-2 gap-0.5' : 'w-full p-3 gap-1';
   return (
@@ -28,14 +26,12 @@ function MarketCard({ team, kind, compact, onPick }) {
       />
       {league && (
         <div className="flex items-center justify-center gap-1">
-          {nat && (
-            <img
-              src={getFlagUrl(nat.flag)}
-              alt=""
-              className="w-3 h-2 object-cover rounded-[2px]"
-              onError={(e) => { e.target.style.display = 'none'; }}
-            />
-          )}
+          <img
+            src={league.logoUrl}
+            alt=""
+            className="w-3.5 h-3.5 object-contain"
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
           <span className={`text-stone ${compact ? 'text-[8px]' : 'text-[9px]'} leading-none`}>{league.name}</span>
         </div>
       )}

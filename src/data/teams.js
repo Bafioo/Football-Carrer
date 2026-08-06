@@ -5,6 +5,7 @@ export const LEAGUES = {
   serie_a: {
     name: 'Serie A',
     country: 'Italia',
+    logoUrl: 'https://assets.football-logos.cc/logos/italy/1500x1500/serie-a.17993e8d.png',
     teams: [
       { id: 'inter', name: 'Inter', logoUrl: 'https://assets.football-logos.cc/logos/italy/1500x1500/inter.d4ebfb95.png' },
       { id: 'milan', name: 'Milan', logoUrl: 'https://assets.football-logos.cc/logos/italy/1500x1500/milan.6b4c62be.png' },
@@ -20,6 +21,7 @@ export const LEAGUES = {
   premier_league: {
     name: 'Premier League',
     country: 'Inghilterra',
+    logoUrl: 'https://assets.football-logos.cc/logos/england/1500x1500/english-premier-league.eb35240c.png',
     teams: [
       { id: 'man_city', name: 'Manchester City', logoUrl: 'https://assets.football-logos.cc/logos/england/1500x1500/manchester-city.8d2b6688.png' },
       { id: 'man_united', name: 'Manchester United', logoUrl: 'https://assets.football-logos.cc/logos/england/1500x1500/manchester-united.104c5aa9.png' },
@@ -34,6 +36,7 @@ export const LEAGUES = {
   la_liga: {
     name: 'La Liga',
     country: 'Spagna',
+    logoUrl: 'https://assets.football-logos.cc/logos/spain/1500x1500/la-liga.07ed875e.png',
     teams: [
       { id: 'real_madrid', name: 'Real Madrid', logoUrl: 'https://assets.football-logos.cc/logos/spain/1500x1500/real-madrid.e34f5ba5.png' },
       { id: 'barcelona', name: 'Barcelona', logoUrl: 'https://assets.football-logos.cc/logos/spain/1500x1500/barcelona.8e8b43a3.png' },
@@ -48,6 +51,7 @@ export const LEAGUES = {
   bundesliga: {
     name: 'Bundesliga',
     country: 'Germania',
+    logoUrl: 'https://assets.football-logos.cc/logos/germany/1500x1500/bundesliga.a474741c.png',
     teams: [
       { id: 'bayern', name: 'Bayern Monaco', logoUrl: 'https://assets.football-logos.cc/logos/germany/1500x1500/bayern-munchen.1eac18e8.png' },
       { id: 'dortmund', name: 'Borussia Dortmund', logoUrl: 'https://assets.football-logos.cc/logos/germany/1500x1500/borussia-dortmund.145250de.png' },
@@ -60,6 +64,7 @@ export const LEAGUES = {
   ligue_1: {
     name: 'Ligue 1',
     country: 'Francia',
+    logoUrl: 'https://assets.football-logos.cc/logos/france/1500x1500/ligue-1.b25b82e4.png',
     teams: [
       { id: 'psg', name: 'Paris Saint-Germain', logoUrl: 'https://assets.football-logos.cc/logos/france/1500x1500/paris-saint-germain.976d063a.png' },
       { id: 'marseille', name: 'Olympique Marsiglia', logoUrl: 'https://assets.football-logos.cc/logos/france/1500x1500/marseille.6f770410.png' },
@@ -71,6 +76,7 @@ export const LEAGUES = {
   serie_b: {
     name: 'Serie B',
     country: 'Italia',
+    logoUrl: 'https://assets.football-logos.cc/logos/italy/1500x1500/serie-b.fad1c540.png',
     teams: [
       { id: 'palermo', name: 'Palermo', logoUrl: 'https://assets.football-logos.cc/logos/italy/1500x1500/palermo.b917fedb.png' },
       { id: 'sampdoria', name: 'Sampdoria', logoUrl: 'https://assets.football-logos.cc/logos/italy/1500x1500/sampdoria.82421bf6.png' },
@@ -85,6 +91,7 @@ export const LEAGUES = {
   championship: {
     name: 'Championship',
     country: 'Inghilterra',
+    logoUrl: 'https://assets.football-logos.cc/logos/england/1500x1500/efl-championship.4cd5a6cf.png',
     teams: [
       { id: 'leeds', name: 'Leeds United', logoUrl: 'https://assets.football-logos.cc/logos/england/1500x1500/leeds-united.7a40d61b.png' },
       { id: 'leicester', name: 'Leicester', logoUrl: 'https://assets.football-logos.cc/logos/england/1500x1500/leicester.56d11a8c.png' },
@@ -99,6 +106,7 @@ export const LEAGUES = {
   la_liga_2: {
     name: 'La Liga 2',
     country: 'Spagna',
+    logoUrl: 'https://assets.football-logos.cc/logos/spain/1500x1500/la-liga-2.128b1558.png',
     teams: [
       { id: 'zaragoza', name: 'Real Saragozza', logoUrl: 'https://assets.football-logos.cc/logos/spain/1500x1500/zaragoza.2221edb0.png' },
       { id: 'sporting_gijon', name: 'Sporting Gijon', logoUrl: 'https://assets.football-logos.cc/logos/spain/1500x1500/sporting-gijon.9a56af7b.png' },
@@ -113,6 +121,7 @@ export const LEAGUES = {
   zweite_bundesliga: {
     name: '2. Bundesliga',
     country: 'Germania',
+    logoUrl: 'https://assets.football-logos.cc/logos/germany/1500x1500/2-bundesliga.ccec4b7c.png',
     teams: [
       { id: 'hannover', name: 'Hannover 96', logoUrl: 'https://assets.football-logos.cc/logos/germany/1500x1500/hannover-96.600c304d.png' },
       { id: 'hertha', name: 'Hertha Berlino', logoUrl: 'https://assets.football-logos.cc/logos/germany/1500x1500/hertha-bsc.e1e27349.png' },
@@ -125,6 +134,7 @@ export const LEAGUES = {
   ligue_2: {
     name: 'Ligue 2',
     country: 'Francia',
+    logoUrl: 'https://assets.football-logos.cc/logos/france/1500x1500/ligue-2.c9971d2b.png',
     teams: [
       { id: 'metz', name: 'Metz', logoUrl: 'https://assets.football-logos.cc/logos/france/1500x1500/fc-metz.d284830e.png' },
       { id: 'guingamp', name: 'Guingamp', logoUrl: 'https://assets.football-logos.cc/logos/france/1500x1500/guingamp.401f1482.png' },
