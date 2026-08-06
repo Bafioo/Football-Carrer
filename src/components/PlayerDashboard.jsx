@@ -501,8 +501,8 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                     alt={entry.team.name}
                     className="w-9 h-9 object-contain shrink-0"
                   />
-                  <div className="min-w-0">
-                    <div className="font-bold text-sm truncate">{entry.team.name}</div>
+                    <div className="min-w-0">
+                    <div className="font-bold text-sm leading-tight">{entry.team.name}</div>
                     <div className="text-xs text-stone">
                       {entry.max === null
                         ? entry.min === player.season ? `Stagione ${entry.min}` : `Dal S${entry.min}`
@@ -591,7 +591,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                       </>
                     )}
                     <img src={getTeamLogoUrl(last.team)} alt="" className="w-5 h-5 object-contain shrink-0" />
-                    <span className="flex-1 truncate font-semibold text-body">
+                    <span className="flex-1 min-w-0 font-semibold text-body leading-tight">
                       {last.team.name}
                       {row.some(s => s.loaned) && <span className="text-warning text-xs font-bold ml-1">[prestito]</span>}
                     </span>

@@ -24,7 +24,7 @@ function MarketCard({ team, kind, compact, onPick }) {
         onError={(e) => { e.target.src = LOGO_FALLBACK; }}
       />
       <div className={`min-w-0 flex-1 ${compact ? '' : 'flex flex-col items-center'}`}>
-        <div className={`font-bold truncate w-full ${compact ? 'text-xs' : 'text-sm'}`}>{team.name}</div>
+        <div className={`font-bold w-full ${compact ? 'text-xs leading-tight' : 'text-sm truncate'}`}>{team.name}</div>
         {!compact && <div className="text-[10px] text-stone truncate w-full">{team.leagueName}</div>}
       </div>
       <span className={`uppercase font-bold shrink-0 ${cls} ${compact ? 'text-[9px]' : 'text-xs'}`}>{text}</span>
