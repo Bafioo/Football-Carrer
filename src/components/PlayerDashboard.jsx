@@ -27,7 +27,7 @@ const ROLE_COEFFS = {
   CAM: { goals: 8,  assists: 11, cleanSheets: 0 },
   CM:  { goals: 6,  assists: 9,  cleanSheets: 0 },
   CDM: { goals: 0.5, assists: 5,  cleanSheets: 0 },
-  CB:  { goals: 0.5, assists: 0.5,  cleanSheets: 0 },
+  CB:  { goals: 0.5, assists: 0.7,  cleanSheets: 0 },
   LB:  { goals: 0.5, assists: 2,  cleanSheets: 0 },
   RB:  { goals: 0.5, assists: 2,  cleanSheets: 0 },
   GK:  { goals: 0,  assists: 0,  cleanSheets: 9 },
@@ -150,7 +150,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
           newStats[stat] = Math.max(1, Math.min(99, newStats[stat] + change));
         });
         const genChange = event.type === 'positive'
-          ? 2 + Math.floor(Math.random() * 4)   // +2..+5
+          ? 1 + Math.floor(Math.random() * 3)   // +1..+3, stable grow
           : event.genLoss
             ? -(1 + Math.floor(Math.random() * 3)) // -1..-3, only injuries
             : 0;                                  // others never touch gen
@@ -179,8 +179,10 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
       let genShift = 0;
       if (p.age <= 25) {
         genShift = 1 + Math.floor(Math.random() * 4); // +1..+4, random positive
-      } else if (p.age > 30) {
-        genShift = -(1 + Math.floor(Math.random() * 3)); // -1..-3, random negative
+      } else if (p.age >= 31 && p.age <= 36) {
+        genShift = -(1 + Math.floor(Math.random() * 2)); // -1..-2, slow decline
+      } else if (p.age > 36) {
+        genShift = -(Math.floor(Math.random() * 3)); // -0..-2, gentle late decline
       }
       const newOverall = Math.max(1, Math.min(99, p.overall + genShift + eventImpact));
 
