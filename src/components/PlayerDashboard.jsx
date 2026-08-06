@@ -421,11 +421,11 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                 </span>
               </div>
               {player.team ? (
-                <div className="flex w-full sm:inline-flex items-center justify-center gap-2.5 bg-surface-soft border border-hairline pl-2.5 pr-3 py-1.5 rounded">
+                <div className="flex w-full sm:w-fit sm:mx-auto items-center justify-center gap-2 bg-surface-soft border border-hairline px-2.5 py-1 rounded-full">
                   <img
                     src={getTeamLogoUrl(player.loanTeam || player.team)}
                     alt={player.loanTeam?.name || player.team.name}
-                    className="w-8 h-8 object-contain"
+                    className="w-7 h-7 object-contain"
                     onError={(e) => { e.target.src = LOGO_FALLBACK; }}
                   />
                   <div className="text-left">
@@ -436,21 +436,21 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                       </div>
                     )}
                   </div>
-                  <div className="flex items-center gap-1.5 border-l border-hairline pl-2.5">
+                  <div className="flex items-center gap-1.5 border-l border-hairline pl-2">
                     <img
                       src={getLeagueLogoUrl(player.loanTeam || player.team)}
                       alt={player.loanTeam?.leagueName || player.team.leagueName}
-                      className="w-5 h-5 object-contain"
+                      className="w-4 h-4 object-contain"
                       onError={(e) => { e.target.src = LOGO_FALLBACK; }}
                     />
-                    <span className="text-xs font-semibold text-stone whitespace-nowrap">
+                    <span className="text-xs font-bold text-ink whitespace-nowrap">
                       {player.loanTeam?.leagueName || player.team.leagueName}
                     </span>
                   </div>
                 </div>
               ) : (
-                <div className="flex w-full sm:inline-flex items-center justify-center gap-2.5 bg-surface-soft border border-hairline px-3 py-1.5 rounded">
-                  <div className="w-8 h-8 rounded-full bg-ink text-canvas flex items-center justify-center text-sm font-bold">
+                <div className="flex w-full sm:w-fit sm:mx-auto items-center justify-center gap-2 bg-surface-soft border border-hairline px-2.5 py-1 rounded-full">
+                  <div className="w-7 h-7 rounded-full bg-ink text-canvas flex items-center justify-center text-sm font-bold">
                     ?
                   </div>
                   <div className="text-left">
