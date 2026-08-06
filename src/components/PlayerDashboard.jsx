@@ -182,7 +182,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
       } else if (p.age >= 31 && p.age <= 36) {
         genShift = -(1 + Math.floor(Math.random() * 2)); // -1..-2, slow decline
       } else if (p.age > 36) {
-        genShift = -(Math.floor(Math.random() * 3)); // -0..-2, gentle late decline
+        genShift = -(3 + Math.floor(Math.random() * 3)); // -3..-5, drastic final decline
       }
       const newOverall = Math.max(1, Math.min(99, p.overall + genShift + eventImpact));
 
