@@ -94,18 +94,49 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
     const byTeam = {};
     seasons.forEach(s => {
       if (!byTeam[s.teamId]) {
-        byTeam[s.teamId] = { team: s.team, min: s.season, max: s.season };
+        byTeam[s.teamId] = {
+          team: s.team,
+          min: s.season,
+          max: s.season,
+          stats: {
+            matches: s.matches,
+            goals: s.goals,
+            assists: s.assists,
+            cleanSheets: s.cleanSheets || 0,
+            saves: s.saves || 0,
+            goalsConceded: s.goalsConceded || 0,
+          },
+        };
       } else {
-        byTeam[s.teamId].min = Math.min(byTeam[s.teamId].min, s.season);
-        byTeam[s.teamId].max = Math.max(byTeam[s.teamId].max, s.season);
+        const e = byTeam[s.teamId];
+        e.min = Math.min(e.min, s.season);
+        e.max = Math.max(e.max, s.season);
+        e.stats.matches += s.matches;
+        e.stats.goals += s.goals;
+        e.stats.assists += s.assists;
+        e.stats.cleanSheets += s.cleanSheets || 0;
+        e.stats.saves += s.saves || 0;
+        e.stats.goalsConceded += s.goalsConceded || 0;
       }
     });
     const list = Object.values(byTeam);
     if (player.team && !list.some(e => e.team.id === player.team.id)) {
-      list.push({ team: player.team, min: player.season, max: null });
+      list.push({ team: player.team, min: player.season, max: null, stats: null });
     }
     return list.sort((a, b) => a.min - b.min);
   })();
+
+  const teamStatsLine = (entry) => {
+    const seasonLabel = entry.max === null
+      ? (entry.min === player.season ? `Stagione ${entry.min}` : `Dal S${entry.min}`)
+      : (entry.min === entry.max ? `Stagione ${entry.min}` : `Stagioni ${entry.min}-${entry.max}`);
+    if (!entry.stats) return seasonLabel;
+    const s = entry.stats;
+    const statsLabel = isGK
+      ? `${s.matches} partite · ${s.saves} parate · ${s.cleanSheets} cs · ${s.goalsConceded} subiti`
+      : `${s.matches} partite · ${s.goals} gol · ${s.assists} assist`;
+    return `${seasonLabel} · ${statsLabel}`;
+  };
 
   const bestSeason = seasons.reduce((best, s) => {
     const score = isGK
@@ -431,41 +462,6 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                 </div>
               )}
             </div>
-
-            {/* Stats summary - only on sm+ (duplicates Riassunto Carriera on mobile) */}
-            <div className={`${isGK ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-3'} hidden sm:grid gap-2 text-center`}>
-              <div className="bg-surface-soft border border-hairline px-3 py-2">
-                <div className="text-xl font-bold text-ink">{player.matchesPlayed}</div>
-                <div className="text-xs text-stone">Partite</div>
-              </div>
-              {isGK ? (
-                <>
-                  <div className="bg-surface-soft border border-hairline px-3 py-2">
-                    <div className="text-xl font-bold text-accent">{player.saves || 0}</div>
-                    <div className="text-xs text-stone">Parate</div>
-                  </div>
-                  <div className="bg-surface-soft border border-hairline px-3 py-2">
-                    <div className="text-xl font-bold text-warning">{player.cleanSheets || 0}</div>
-                    <div className="text-xs text-stone">Clean sheet</div>
-                  </div>
-                  <div className="bg-surface-soft border border-hairline px-3 py-2">
-                    <div className="text-xl font-bold text-danger">{player.goalsConceded || 0}</div>
-                    <div className="text-xs text-stone">Goal subiti</div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="bg-surface-soft border border-hairline px-3 py-2">
-                    <div className="text-xl font-bold text-success">{player.goals}</div>
-                    <div className="text-xs text-stone">Gol</div>
-                  </div>
-                  <div className="bg-surface-soft border border-hairline px-3 py-2">
-                    <div className="text-xl font-bold text-accent">{player.assists}</div>
-                    <div className="text-xs text-stone">Assist</div>
-                  </div>
-                </>
-              )}
-            </div>
           </div>
         </div>
 
@@ -499,9 +495,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                     <div className="min-w-0">
                     <div className="font-bold text-sm leading-tight">{entry.team.name}</div>
                     <div className="text-xs text-stone">
-                      {entry.max === null
-                        ? entry.min === player.season ? `Stagione ${entry.min}` : `Dal S${entry.min}`
-                        : entry.min === entry.max ? `Stagione ${entry.min}` : `Stagioni ${entry.min}-${entry.max}`}
+                      {teamStatsLine(entry)}
                     </div>
                   </div>
                   {entry.max === null && (
