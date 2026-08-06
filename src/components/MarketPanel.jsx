@@ -27,7 +27,7 @@ function MarketCard({ team, kind, compact, onPick }) {
         {compact && (
           <span className={`uppercase font-bold text-[9px] ${cls}`}>{text}</span>
         )}
-        <div className={`font-bold w-full ${compact ? 'text-xs leading-tight text-center' : 'text-sm truncate'}`}>{team.name}</div>
+        <div className={`font-bold w-full ${compact ? 'text-xs leading-tight text-center break-words' : 'text-sm truncate'}`}>{team.name}</div>
         {!compact && <div className="text-[10px] text-stone truncate w-full">{team.leagueName}</div>}
       </div>
       <span className={`uppercase font-bold shrink-0 ${cls} ${compact ? 'hidden' : 'text-xs'}`}>{text}</span>
