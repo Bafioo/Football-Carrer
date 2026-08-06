@@ -126,18 +126,6 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
     return list.sort((a, b) => a.min - b.min);
   })();
 
-  const teamStatsLine = (entry) => {
-    const seasonLabel = entry.max === null
-      ? (entry.min === player.season ? `Stagione ${entry.min}` : `Dal S${entry.min}`)
-      : (entry.min === entry.max ? `Stagione ${entry.min}` : `Stagioni ${entry.min}-${entry.max}`);
-    if (!entry.stats) return seasonLabel;
-    const s = entry.stats;
-    const statsLabel = isGK
-      ? `${s.matches} partite · ${s.saves} parate · ${s.cleanSheets} cs · ${s.goalsConceded} subiti`
-      : `${s.matches} partite · ${s.goals} gol · ${s.assists} assist`;
-    return `${seasonLabel} · ${statsLabel}`;
-  };
-
   const bestSeason = seasons.reduce((best, s) => {
     const score = isGK
       ? (s.saves || 0) + s.cleanSheets * 5 - (s.goalsConceded || 0)
@@ -481,28 +469,63 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
           {/* Team History */}
           <div className="lg:col-span-3 card">
             <h3 className="text-lg font-bold mb-3">Storico Squadre</h3>
+            <div className={`grid gap-1 px-3 pb-2 text-[10px] font-bold text-mute uppercase ${isGK ? 'grid-cols-[minmax(0,1fr)_repeat(4,3.2rem)]' : 'grid-cols-[minmax(0,1fr)_repeat(3,3.2rem)]'}`}>
+              <div>Squadra</div>
+              <div className="text-right">Apps</div>
+              {isGK ? (
+                <>
+                  <div className="text-right">Parate</div>
+                  <div className="text-right">CS</div>
+                  <div className="text-right">Subiti</div>
+                </>
+              ) : (
+                <>
+                  <div className="text-right">Goals</div>
+                  <div className="text-right">Ast</div>
+                </>
+              )}
+            </div>
             <div className="space-y-2">
-              {teamHistory.map((entry, i) => (
+              {teamHistory.map((entry, i) => {
+                const s = entry.stats;
+                const num = (v) => s ? v : '—';
+                return (
                 <div
                   key={i}
-                  className={`flex items-center gap-3 bg-surface-soft border border-hairline px-3 py-1.5 ${entry.max === null ? 'border-ink' : ''}`}
+                  className={`grid items-center gap-1 bg-surface-soft border border-hairline px-3 py-1.5 ${entry.max === null ? 'border-ink' : ''} ${isGK ? 'grid-cols-[minmax(0,1fr)_repeat(4,3.2rem)]' : 'grid-cols-[minmax(0,1fr)_repeat(3,3.2rem)]'}`}
                 >
-                  <img
-                    src={getTeamLogoUrl(entry.team)}
-                    alt={entry.team.name}
-                    className="w-9 h-9 object-contain shrink-0"
-                  />
+                  <div className="flex items-center gap-2 min-w-0">
+                    <img
+                      src={getTeamLogoUrl(entry.team)}
+                      alt={entry.team.name}
+                      className="w-9 h-9 object-contain shrink-0"
+                    />
                     <div className="min-w-0">
-                    <div className="font-bold text-sm leading-tight">{entry.team.name}</div>
-                    <div className="text-xs text-stone">
-                      {teamStatsLine(entry)}
+                      <div className="font-bold text-sm leading-tight truncate">{entry.team.name}</div>
+                      <div className="text-xs text-stone">
+                        {entry.max === null
+                          ? entry.min === player.season ? `Stagione ${entry.min}` : `Dal S${entry.min}`
+                          : entry.min === entry.max ? `Stagione ${entry.min}` : `Stagioni ${entry.min}-${entry.max}`}
+                        {entry.max === null && <span className="text-success font-bold ml-1">ORA</span>}
+                      </div>
                     </div>
                   </div>
-                  {entry.max === null && (
-                    <span className="ml-auto text-xs font-bold text-success">ORA</span>
+                  <div className="text-right text-sm font-bold">{num(s?.matches)}</div>
+                  {isGK ? (
+                    <>
+                      <div className="text-right text-sm font-bold text-accent">{num(s?.saves)}</div>
+                      <div className="text-right text-sm font-bold text-warning">{num(s?.cleanSheets)}</div>
+                      <div className="text-right text-sm font-bold text-danger">{num(s?.goalsConceded)}</div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="text-right text-sm font-bold text-success">{num(s?.goals)}</div>
+                      <div className="text-right text-sm font-bold text-accent">{num(s?.assists)}</div>
+                    </>
                   )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
