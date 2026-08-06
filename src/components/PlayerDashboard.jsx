@@ -98,6 +98,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
           team: s.team,
           min: s.season,
           max: s.season,
+          loaned: !!s.loaned,
           stats: {
             matches: s.matches,
             goals: s.goals,
@@ -111,6 +112,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
         const e = byTeam[s.teamId];
         e.min = Math.min(e.min, s.season);
         e.max = Math.max(e.max, s.season);
+        if (s.loaned) e.loaned = true;
         e.stats.matches += s.matches;
         e.stats.goals += s.goals;
         e.stats.assists += s.assists;
@@ -121,7 +123,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
     });
     const list = Object.values(byTeam);
     if (player.team && !list.some(e => e.team.id === player.team.id)) {
-      list.push({ team: player.team, min: player.season, max: null, stats: null });
+      list.push({ team: player.team, min: player.season, max: null, stats: null, loaned: false });
     }
     return list.sort((a, b) => a.min - b.min);
   })();
@@ -511,7 +513,12 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                       className="w-9 h-9 object-contain shrink-0"
                     />
                     <div className="min-w-0">
-                      <div className="font-bold text-sm leading-tight truncate">{entry.team.name}</div>
+                      <div className="font-bold text-sm leading-tight truncate">
+                        {entry.team.name}
+                        {entry.loaned && (
+                          <span className="ml-1.5 text-[10px] font-bold text-warning align-middle uppercase">Prestito</span>
+                        )}
+                      </div>
                       <div className="text-xs text-stone">
                         {entry.max === null
                           ? entry.min === player.season ? `Stagione ${entry.min}` : `Dal S${entry.min}`
