@@ -110,17 +110,6 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
     return !best || score > best.score ? { ...s, score } : best;
   }, null);
 
-  // Season rows: single per year, or pairs when advancing 2 at a time
-  const seasonRows = (() => {
-    const reversed = [...seasons].reverse();
-    if ((player.advanceCount || 1) <= 1) return reversed.map(s => [s]);
-    const rows = [];
-    for (let i = 0; i < reversed.length; i += 2) {
-      rows.push(i + 1 < reversed.length ? [reversed[i + 1], reversed[i]] : [reversed[i]]);
-    }
-    return rows;
-  })();
-
   const simulateSeasons = (count, base) => {
     let p = { ...(base || player) };
     const agg = { matches: 0, goals: 0, assists: 0, cleanSheets: 0, saves: 0, goalsConceded: 0, events: [], loaned: false, years: 0, toSeason: p.season };
@@ -488,7 +477,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
 
         <div className="grid lg:grid-cols-4 gap-5 lg:gap-4 stagger-enter">
           {/* Team History */}
-          <div className="card">
+          <div className="lg:col-span-3 card">
             <h3 className="text-lg font-bold mb-3">Storico Squadre</h3>
             <div className="space-y-2">
               {teamHistory.map((entry, i) => (
@@ -514,103 +503,6 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                   )}
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* Career Recap */}
-          <div className="lg:col-span-2 card">
-            <h3 className="text-lg font-bold mb-3">Riassunto Carriera</h3>
-
-            <div className={`${isGK ? 'sm:grid-cols-5' : 'sm:grid-cols-4'} grid grid-cols-2 gap-2 text-center mb-3`}>
-              <div className="bg-surface-soft border border-hairline px-3 py-2">
-                <div className="text-xl font-bold text-ink">{player.season}</div>
-                <div className="text-xs text-stone">Stagioni</div>
-              </div>
-              <div className="bg-surface-soft border border-hairline px-3 py-2">
-                <div className="text-xl font-bold text-ink">{seasons.reduce((t, s) => t + s.matches, 0)}</div>
-                <div className="text-xs text-stone">Partite</div>
-              </div>
-              {isGK ? (
-                <>
-                  <div className="bg-surface-soft border border-hairline px-3 py-2">
-                    <div className="text-xl font-bold text-accent">{seasons.reduce((t, s) => t + (s.saves || 0), 0)}</div>
-                    <div className="text-xs text-stone">Parate</div>
-                  </div>
-                  <div className="bg-surface-soft border border-hairline px-3 py-2">
-                    <div className="text-xl font-bold text-warning">{seasons.reduce((t, s) => t + s.cleanSheets, 0)}</div>
-                    <div className="text-xs text-stone">Clean sheet</div>
-                  </div>
-                  <div className="bg-surface-soft border border-hairline px-3 py-2">
-                    <div className="text-xl font-bold text-danger">{seasons.reduce((t, s) => t + (s.goalsConceded || 0), 0)}</div>
-                    <div className="text-xs text-stone">Goal subiti</div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="bg-surface-soft border border-hairline px-3 py-2">
-                    <div className="text-xl font-bold text-success">{seasons.reduce((t, s) => t + s.goals, 0)}</div>
-                    <div className="text-xs text-stone">Gol</div>
-                  </div>
-                  <div className="bg-surface-soft border border-hairline px-3 py-2">
-                    <div className="text-xl font-bold text-accent">{seasons.reduce((t, s) => t + s.assists, 0)}</div>
-                    <div className="text-xs text-stone">Assist</div>
-                  </div>
-                </>
-              )}
-            </div>
-
-            {bestSeason ? (
-              <div className="bg-surface-soft border border-hairline px-3 py-2 mb-3 flex flex-wrap items-center gap-x-6 gap-y-1">
-                <span className="text-sm font-bold text-warning">MIGLIOR STAGIONE: S{bestSeason.season}</span>
-                <span className="text-sm text-body">
-                  {bestSeason.team.name}{bestSeason.loaned ? ' (prestito)' : ''} - {bestSeason.matches} partite{isGK
-                    ? `, ${bestSeason.saves || 0} parate, ${bestSeason.cleanSheets} cs, ${bestSeason.goalsConceded || 0} subiti`
-                    : `, ${bestSeason.goals} gol, ${bestSeason.assists} assist`}
-                </span>
-              </div>
-            ) : (
-              <div className="bg-surface-soft border border-hairline px-3 py-2 mb-3 text-sm text-body">
-                Nessuna stagione conclusa ancora: firma un contratto per iniziare la carriera.
-              </div>
-            )}
-
-            <div className="text-xs font-bold text-mute uppercase mb-2">Stagioni</div>
-            <div className="max-h-[230px] overflow-y-auto pr-2">
-              {seasonRows.map((row, i) => {
-                const first = row[0];
-                const last = row[row.length - 1];
-                const sum = (k) => row.reduce((t, s) => t + (s[k] || 0), 0);
-                return (
-                  <div key={i} className={`flex items-center gap-1.5 px-2 py-1.5 border-b border-hairline text-sm ${last.season === player.season ? 'bg-surface-soft rounded-lg border-b-transparent' : ''}`}>
-                  <span className="w-8 font-bold text-ink">{last.age}a</span>
-                    {row.length > 1 && first.team.id !== last.team.id && (
-                      <>
-                        <img src={getTeamLogoUrl(first.team)} alt="" className="w-4 h-4 object-contain shrink-0" />
-                        <span className="truncate max-w-16 text-stone hidden sm:block">{first.team.name}</span>
-                        <span className="text-stone shrink-0 hidden sm:block">-&gt;</span>
-                      </>
-                    )}
-                    <img src={getTeamLogoUrl(last.team)} alt="" className="w-5 h-5 object-contain shrink-0" />
-                    <span className="flex-1 min-w-0 font-semibold text-body leading-tight">
-                      {last.team.name}
-                      {row.some(s => s.loaned) && <span className="text-warning text-xs font-bold ml-1">[prestito]</span>}
-                    </span>
-                    <span className="w-8 text-right text-stone">{sum('matches')}</span>
-                    {isGK ? (
-                      <>
-                        <span className="w-8 text-right text-accent font-bold">{sum('saves')}</span>
-                        <span className="w-8 text-right text-warning">{sum('cleanSheets')}</span>
-                        <span className="w-8 text-right text-danger">{sum('goalsConceded')}</span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="w-8 text-right text-success font-bold">{sum('goals')}</span>
-                        <span className="w-8 text-right text-accent font-bold">{sum('assists')}</span>
-                      </>
-                    )}
-                  </div>
-                );
-              })}
             </div>
           </div>
 

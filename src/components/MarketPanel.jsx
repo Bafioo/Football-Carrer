@@ -1,4 +1,5 @@
-import { getTeamLogoUrl } from '../data/teams';
+import { LEAGUES, getTeamLogoUrl } from '../data/teams';
+import { NATIONALITIES, getFlagUrl } from '../data/nationalities';
 
 const LOGO_FALLBACK = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23d4d2d2"/></svg>';
 
@@ -11,26 +12,33 @@ const LABELS = {
 
 function MarketCard({ team, kind, compact, onPick }) {
   const { text, cls } = LABELS[kind] || LABELS.transfer;
-  const base = 'bg-surface-soft border border-hairline-strong hover:border-ink rounded-lg transition-[color,background-color,border-color,transform] duration-150 active:scale-[0.97] flex items-center gap-3 text-center';
-  const sizing = compact
-    ? 'flex-1 min-w-0 px-3 py-2'
-    : 'w-full p-3 flex-col';
+  const league = LEAGUES[team.leagueId];
+  const nat = league && NATIONALITIES.find(n => n.name === league.country);
+  const base = 'bg-surface-soft border border-hairline-strong hover:border-ink rounded-lg transition-[color,background-color,border-color,transform] duration-150 active:scale-[0.97] flex flex-col items-center text-center';
+  const sizing = compact ? 'flex-1 min-w-0 px-2 py-2 gap-0.5' : 'w-full p-3 gap-1';
   return (
     <button onClick={() => onPick(kind, team)} className={`${base} ${sizing}`}>
+      <span className={`uppercase font-bold ${compact ? 'text-[9px]' : 'text-[10px]'} ${cls}`}>{text}</span>
+      <div className={`font-bold w-full leading-tight ${compact ? 'text-[10px]' : 'text-xs'}`}>{team.name}</div>
       <img
         src={getTeamLogoUrl(team)}
         alt={team.name}
-        className={`object-contain shrink-0 ${compact ? 'w-8 h-8' : 'w-10 h-10'}`}
+        className={`object-contain ${compact ? 'w-8 h-8' : 'w-10 h-10'}`}
         onError={(e) => { e.target.src = LOGO_FALLBACK; }}
       />
-      <div className={`min-w-0 flex-1 ${compact ? 'flex flex-col items-center leading-none' : 'flex flex-col items-center'}`}>
-        {compact && (
-          <span className={`uppercase font-bold text-[9px] ${cls}`}>{text}</span>
-        )}
-        <div className={`font-bold w-full ${compact ? 'text-xs leading-tight text-center break-words' : 'text-sm truncate'}`}>{team.name}</div>
-        {!compact && <div className="text-[10px] text-stone truncate w-full">{team.leagueName}</div>}
-      </div>
-      <span className={`uppercase font-bold shrink-0 ${cls} ${compact ? 'hidden' : 'text-xs'}`}>{text}</span>
+      {league && (
+        <div className="flex items-center justify-center gap-1">
+          {nat && (
+            <img
+              src={getFlagUrl(nat.flag)}
+              alt=""
+              className="w-3 h-2 object-cover rounded-[2px]"
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
+          )}
+          <span className={`text-stone ${compact ? 'text-[8px]' : 'text-[9px]'} leading-none`}>{league.name}</span>
+        </div>
+      )}
     </button>
   );
 }
