@@ -411,7 +411,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                   title={player.nationality.name}
                 />
               </div>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5 mb-3">
                 <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-ink text-canvas">
                   {player.role} {role.name}
                 </span>
@@ -422,50 +422,48 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                   Stagione {player.season}
                 </span>
               </div>
-            </div>
-          </div>
 
-          {/* Current team - full row below player info */}
-          <div className="mt-4 md:mt-5 flex justify-center">
-            {player.team ? (
-              <div className="flex items-center justify-center gap-2 bg-surface-soft border border-hairline px-2.5 py-1 rounded-full">
-                <img
-                  src={getTeamLogoUrl(player.loanTeam || player.team)}
-                  alt={player.loanTeam?.name || player.team.name}
-                  className="w-7 h-7 object-contain"
-                  onError={(e) => { e.target.src = LOGO_FALLBACK; }}
-                />
-                <div className="text-left">
-                  <div className="font-bold text-sm leading-tight">{player.loanTeam ? player.loanTeam.name : player.team.name}</div>
-                  {player.loanTeam && (
-                    <div className="text-xs text-warning font-bold leading-tight">
-                      PROPRIETA: {player.team.name}
-                    </div>
-                  )}
-                </div>
-                <div className="flex items-center gap-1.5 border-l border-hairline pl-2">
+              {/* Current team - under the info, next to OVR */}
+              {player.team ? (
+                <div className="flex w-full sm:w-fit items-center justify-center gap-2 bg-surface-soft border border-hairline px-2.5 py-1 rounded-full">
                   <img
-                    src={getLeagueLogoUrl(player.loanTeam || player.team)}
-                    alt={player.loanTeam?.leagueName || player.team.leagueName}
-                    className="w-4 h-4 object-contain"
+                    src={getTeamLogoUrl(player.loanTeam || player.team)}
+                    alt={player.loanTeam?.name || player.team.name}
+                    className="w-7 h-7 object-contain"
                     onError={(e) => { e.target.src = LOGO_FALLBACK; }}
                   />
-                  <span className="text-xs font-bold text-ink whitespace-nowrap">
-                    {player.loanTeam?.leagueName || player.team.leagueName}
-                  </span>
+                  <div className="text-left">
+                    <div className="font-bold text-sm leading-tight">{player.loanTeam ? player.loanTeam.name : player.team.name}</div>
+                    {player.loanTeam && (
+                      <div className="text-xs text-warning font-bold leading-tight">
+                        PROPRIETA: {player.team.name}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5 border-l border-hairline pl-2">
+                    <img
+                      src={getLeagueLogoUrl(player.loanTeam || player.team)}
+                      alt={player.loanTeam?.leagueName || player.team.leagueName}
+                      className="w-4 h-4 object-contain"
+                      onError={(e) => { e.target.src = LOGO_FALLBACK; }}
+                    />
+                    <span className="text-xs font-bold text-ink whitespace-nowrap">
+                      {player.loanTeam?.leagueName || player.team.leagueName}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center gap-2 bg-surface-soft border border-hairline px-2.5 py-1 rounded-full">
-                <div className="w-7 h-7 rounded-full bg-ink text-canvas flex items-center justify-center text-sm font-bold">
-                  ?
+              ) : (
+                <div className="flex w-full sm:w-fit items-center justify-center gap-2 bg-surface-soft border border-hairline px-2.5 py-1 rounded-full">
+                  <div className="w-7 h-7 rounded-full bg-ink text-canvas flex items-center justify-center text-sm font-bold">
+                    ?
+                  </div>
+                  <div className="text-left">
+                    <div className="font-bold text-sm leading-tight">Squadra Libera</div>
+                    <div className="text-xs text-stone leading-tight">Scegli un'offerta in basso</div>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <div className="font-bold text-sm leading-tight">Squadra Libera</div>
-                  <div className="text-xs text-stone leading-tight">Scegli un'offerta in basso</div>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
