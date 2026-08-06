@@ -25,10 +25,8 @@ export default function App() {
   };
 
   const handleReset = () => {
-    if (confirm('Vuoi davvero cancellare la carriera e ricominciare?')) {
-      clearGame();
-      setPlayer(null);
-    }
+    clearGame();
+    setPlayer(null);
   };
 
   if (loading) {
