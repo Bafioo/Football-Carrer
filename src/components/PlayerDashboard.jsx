@@ -699,7 +699,12 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                   <div key={i} className="flex items-center gap-3 bg-surface-soft border border-hairline px-3 py-1.5">
                     <img src={getTeamLogoUrl(entry.team)} alt={entry.team.name} className="w-8 h-8 object-contain shrink-0" />
                     <div className="min-w-0">
-                      <div className="font-bold text-sm truncate">{entry.team.name}</div>
+                      <div className="font-bold text-sm truncate">
+                        {entry.team.name}
+                        {entry.loaned && (
+                          <span className="ml-1.5 text-[10px] font-bold text-warning align-middle uppercase">Prestito</span>
+                        )}
+                      </div>
                       <div className="text-xs text-stone">
                         {entry.min === entry.max ? `Stagione ${entry.min}` : `Stagioni ${entry.min}-${entry.max}`}
                       </div>
