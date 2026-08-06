@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { NATIONALITIES, getFlagUrl } from '../data/nationalities';
 import { ROLES, ROLE_KEYS, generateInitialStats, calculateOverall } from '../data/roles';
+import { loadPrefs } from '../utils/storage';
 
 const STEPS = [
   { key: 1, label: 'Nome' },
@@ -23,12 +24,13 @@ const PITCH_POSITIONS = {
 };
 
 export default function PlayerCreation({ onCreate }) {
+  const [initialPrefs] = useState(() => loadPrefs());
   const [step, setStep] = useState(1);
-  const [name, setName] = useState('');
-  const [nationality, setNationality] = useState(null);
-  const [role, setRole] = useState(null);
+  const [name, setName] = useState(() => initialPrefs.name || '');
+  const [nationality, setNationality] = useState(() => NATIONALITIES.find(n => n.code === initialPrefs.nationality) || null);
+  const [role, setRole] = useState(() => initialPrefs.role || null);
   const [searchNat, setSearchNat] = useState('');
-  const [advanceCount, setAdvanceCount] = useState(1);
+  const [advanceCount, setAdvanceCount] = useState(() => initialPrefs.advanceCount || 1);
   const navRef = useRef(null);
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import PlayerCreation from './components/PlayerCreation';
 import PlayerDashboard from './components/PlayerDashboard';
-import { loadGame, saveGame, clearGame } from './utils/storage';
+import { loadGame, saveGame, clearGame, savePrefs } from './utils/storage';
 
 export default function App() {
   const [player, setPlayer] = useState(null);
@@ -14,6 +14,7 @@ export default function App() {
   }, []);
 
   const handleCreatePlayer = (newPlayer) => {
+    savePrefs(newPlayer);
     setPlayer(newPlayer);
     saveGame(newPlayer);
   };
