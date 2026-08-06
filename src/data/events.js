@@ -208,9 +208,9 @@ export const getRoleBand = (role) => {
   return 'midfielder';
 };
 
-// Get random event for a role band; injuries are uncommon (~25% of draws)
+// Get random event for a role band; injuries are uncommon (~10% of draws)
 export const getRandomEvent = (role) => {
-  if (Math.random() < 0.25) {
+  if (Math.random() < 0.1) {
     return INJURY_EVENTS[Math.floor(Math.random() * INJURY_EVENTS.length)];
   }
   const pool = EVENTS_BY_BAND[getRoleBand(role)] || EVENTS_BY_BAND.midfielder;
