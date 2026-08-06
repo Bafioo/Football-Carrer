@@ -37,7 +37,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
   const [showTeamSwitcher, setShowTeamSwitcher] = useState(false);
   const [yearSummary, setYearSummary] = useState(null);
   const [showFinal, setShowFinal] = useState(false);
-  const [offers, setOffers] = useState(null);
+  const [offers, setOffers] = useState(player.market || null);
 
   // Build the 3 possible moves for the current player state.
   // Teamless: 3 join offers. Teamed: stay / transfer / loan.
@@ -74,9 +74,13 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
   };
 
   // Regenerate offers whenever a brand-new career (or a fresh session)
-  // has none yet.
+  // has none yet, persisting them so a refresh keeps the same market.
   useEffect(() => {
-    if (!offers) setOffers(buildOffers(player));
+    if (!offers) {
+      const next = buildOffers(player);
+      setOffers(next);
+      onUpdate({ ...player, market: next });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -244,7 +248,8 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
     }
 
     if (agg.years === 0) return;
-    onUpdate(p);
+    const nextOffers = buildOffers(p);
+    onUpdate({ ...p, market: nextOffers });
     if (p.age >= 40) {
       setShowFinal(true);
       return;
@@ -263,7 +268,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
       newOverall: p.overall,
       loanReturned: agg.loaned,
     });
-    setOffers(buildOffers(p));
+    setOffers(nextOffers);
   };
 
   const handleJoinOffer = (team) => {
@@ -336,8 +341,9 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
         text: `Trasferimento al ${newTeam.name}!`,
       }, ...player.history].slice(0, 50)
     };
-    onUpdate(updated);
-    setOffers(buildOffers(updated));
+    const next = buildOffers(updated);
+    onUpdate({ ...updated, market: next });
+    setOffers(next);
     setShowTeamSwitcher(false);
   };
 
