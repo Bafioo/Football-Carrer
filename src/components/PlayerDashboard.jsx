@@ -507,6 +507,9 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                   className={`grid items-center gap-1 bg-surface-soft border border-hairline px-3 py-1.5 ${entry.max === null ? 'border-ink' : ''} ${isGK ? 'grid-cols-[minmax(0,1fr)_repeat(4,3.2rem)]' : 'grid-cols-[minmax(0,1fr)_repeat(3,3.2rem)]'}`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
+                    {entry.loaned && (
+                      <span className="text-stone font-bold text-lg leading-none shrink-0">→</span>
+                    )}
                     <img
                       src={getTeamLogoUrl(entry.team)}
                       alt={entry.team.name}
@@ -515,9 +518,6 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                     <div className="min-w-0">
                       <div className="font-bold text-sm leading-tight truncate">
                         {entry.team.name}
-                        {entry.loaned && (
-                          <span className="ml-1.5 text-[10px] font-bold text-warning align-middle uppercase">Prestito</span>
-                        )}
                       </div>
                       <div className="text-xs text-stone">
                         {entry.max === null
@@ -697,13 +697,13 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
               <div className="space-y-2 mb-4">
                 {teamHistory.map((entry, i) => (
                   <div key={i} className="flex items-center gap-3 bg-surface-soft border border-hairline px-3 py-1.5">
+                    {entry.loaned && (
+                      <span className="text-stone font-bold text-lg leading-none shrink-0">→</span>
+                    )}
                     <img src={getTeamLogoUrl(entry.team)} alt={entry.team.name} className="w-8 h-8 object-contain shrink-0" />
                     <div className="min-w-0">
                       <div className="font-bold text-sm truncate">
                         {entry.team.name}
-                        {entry.loaned && (
-                          <span className="ml-1.5 text-[10px] font-bold text-warning align-middle uppercase">Prestito</span>
-                        )}
                       </div>
                       <div className="text-xs text-stone">
                         {entry.min === entry.max ? `Stagione ${entry.min}` : `Stagioni ${entry.min}-${entry.max}`}
