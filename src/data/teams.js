@@ -151,6 +151,11 @@ export const getTeamLogoUrl = (team) => {
   return team?.logoUrl || null;
 };
 
+// Get the league badge/logo URL a team belongs to
+export const getLeagueLogoUrl = (team) => {
+  return team?.leagueId ? LEAGUES[team.leagueId]?.logoUrl || null : null;
+};
+
 // Get all teams as flat list
 export const getAllTeams = () => {
   const teams = [];

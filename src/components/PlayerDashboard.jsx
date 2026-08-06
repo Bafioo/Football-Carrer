@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ROLES } from '../data/roles';
 import { getFlagUrl } from '../data/nationalities';
-import { getTeamLogoUrl, getAllTeams, getTeamRequirement } from '../data/teams';
+import { getTeamLogoUrl, getLeagueLogoUrl, getAllTeams, getTeamRequirement } from '../data/teams';
 import { getRandomEvent } from '../data/events';
 import { genFactor, seasonNoise } from '../utils/gen';
 import TeamSwitcher from './TeamSwitcher';
@@ -421,31 +421,41 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                 </span>
               </div>
               {player.team ? (
-                <div className="flex w-full sm:inline-flex items-center justify-center gap-3 bg-surface-soft border border-hairline px-3 py-2 rounded">
+                <div className="flex w-full sm:inline-flex items-center justify-center gap-2.5 bg-surface-soft border border-hairline pl-2.5 pr-3 py-1.5 rounded">
                   <img
                     src={getTeamLogoUrl(player.loanTeam || player.team)}
                     alt={player.loanTeam?.name || player.team.name}
-                    className="w-10 h-10 object-contain"
+                    className="w-8 h-8 object-contain"
                     onError={(e) => { e.target.src = LOGO_FALLBACK; }}
                   />
                   <div className="text-left">
-                    <div className="font-bold text-base">{player.loanTeam ? player.loanTeam.name : player.team.name}</div>
-                    <div className="text-xs text-stone">{player.loanTeam?.leagueName || player.team.leagueName}</div>
+                    <div className="font-bold text-sm leading-tight">{player.loanTeam ? player.loanTeam.name : player.team.name}</div>
                     {player.loanTeam && (
-                      <div className="text-xs text-warning font-bold mt-0.5">
+                      <div className="text-xs text-warning font-bold leading-tight">
                         PROPRIETA: {player.team.name}
                       </div>
                     )}
                   </div>
+                  <div className="flex items-center gap-1.5 border-l border-hairline pl-2.5">
+                    <img
+                      src={getLeagueLogoUrl(player.loanTeam || player.team)}
+                      alt={player.loanTeam?.leagueName || player.team.leagueName}
+                      className="w-5 h-5 object-contain"
+                      onError={(e) => { e.target.src = LOGO_FALLBACK; }}
+                    />
+                    <span className="text-xs font-semibold text-stone whitespace-nowrap">
+                      {player.loanTeam?.leagueName || player.team.leagueName}
+                    </span>
+                  </div>
                 </div>
               ) : (
-                <div className="flex w-full sm:inline-flex items-center justify-center gap-3 bg-surface-soft border border-hairline px-3 py-2 rounded">
-                  <div className="w-10 h-10 rounded-full bg-ink text-canvas flex items-center justify-center text-base font-bold">
+                <div className="flex w-full sm:inline-flex items-center justify-center gap-2.5 bg-surface-soft border border-hairline px-3 py-1.5 rounded">
+                  <div className="w-8 h-8 rounded-full bg-ink text-canvas flex items-center justify-center text-sm font-bold">
                     ?
                   </div>
                   <div className="text-left">
-                    <div className="font-bold text-base">Squadra Libera</div>
-                    <div className="text-xs text-stone">Scegli un'offerta in basso</div>
+                    <div className="font-bold text-sm leading-tight">Squadra Libera</div>
+                    <div className="text-xs text-stone leading-tight">Scegli un'offerta in basso</div>
                   </div>
                 </div>
               )}
