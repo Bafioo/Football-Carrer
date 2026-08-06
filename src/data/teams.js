@@ -64,7 +64,7 @@ export const LEAGUES = {
   ligue_1: {
     name: 'Ligue 1',
     country: 'Francia',
-    logoUrl: 'https://assets.football-logos.cc/logos/france/1500x1500/ligue-1.b25b82e4.png',
+    logoUrl: 'https://assets.football-logos.cc/logos/france/1500x1500/ligue-1--white.53848854.png',
     teams: [
       { id: 'psg', name: 'Paris Saint-Germain', logoUrl: 'https://assets.football-logos.cc/logos/france/1500x1500/paris-saint-germain.976d063a.png' },
       { id: 'marseille', name: 'Olympique Marsiglia', logoUrl: 'https://assets.football-logos.cc/logos/france/1500x1500/marseille.6f770410.png' },
@@ -134,7 +134,7 @@ export const LEAGUES = {
   ligue_2: {
     name: 'Ligue 2',
     country: 'Francia',
-    logoUrl: 'https://assets.football-logos.cc/logos/france/1500x1500/ligue-2.c9971d2b.png',
+    logoUrl: 'https://assets.football-logos.cc/logos/france/1500x1500/ligue-2--white.3c18f79c.png',
     teams: [
       { id: 'metz', name: 'Metz', logoUrl: 'https://assets.football-logos.cc/logos/france/1500x1500/fc-metz.d284830e.png' },
       { id: 'guingamp', name: 'Guingamp', logoUrl: 'https://assets.football-logos.cc/logos/france/1500x1500/guingamp.401f1482.png' },
