@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ROLES } from '../data/roles';
 import { getFlagUrl } from '../data/nationalities';
 import { getTeamLogoUrl, getLeagueLogoUrl, getAllTeams, getTeamRequirement } from '../data/teams';
 import { getRandomEvent } from '../data/events';
 import { genFactor, seasonNoise } from '../utils/gen';
-import TeamSwitcher from './TeamSwitcher';
 import MarketPanel from './MarketPanel';
 
 const LOGO_FALLBACK = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23d4d2d2"/></svg>';
@@ -52,12 +51,13 @@ const goalSeason = (raw, matches) => {
 };
 
 export default function PlayerDashboard({ player, onUpdate, onReset }) {
-  const [showTeamSwitcher, setShowTeamSwitcher] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
   const [yearSummary, setYearSummary] = useState(null);
   const [showFinal, setShowFinal] = useState(false);
   const [offers, setOffers] = useState(player.market || null);
   const [continueReady, setContinueReady] = useState(false);
   const [simMsg, setSimMsg] = useState(0);
+  const continueBtnRef = useRef(null);
 
   // Continue unlocks after 2s so the season summary is readable first
   useEffect(() => {
@@ -74,6 +74,22 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
     if (continueReady) return;
     const t = setInterval(() => setSimMsg(m => (m + 1) % SIM_MSGS.length), 600);
     return () => clearInterval(t);
+  }, [continueReady]);
+
+  // Auto-scroll the Continue button into view once ready if events
+  // push it below the fold of the year-summary modal (responsive).
+  useEffect(() => {
+    if (continueReady && continueBtnRef.current) {
+      const btn = continueBtnRef.current;
+      const scroller = btn.closest('.overflow-y-auto');
+      if (scroller) {
+        const sRect = scroller.getBoundingClientRect();
+        const bRect = btn.getBoundingClientRect();
+        if (bRect.bottom > sRect.bottom || bRect.top < sRect.top) {
+          scroller.scrollTo({ top: scroller.scrollHeight, behavior: 'smooth' });
+        }
+      }
+    }
   }, [continueReady]);
 
   // Build the 3 possible moves for the current player state.
@@ -191,8 +207,9 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
         ? 1
         : 0.5 + Math.random() * 0.15;
 
-      // 1-2 random events during the year
-      const eventCount = 1 + (Math.random() < 0.5 ? 1 : 0);
+      // Events per season: single-season view can flood up to 4,
+      // multi-season simulation keeps it lighter (max 2) to stay readable.
+      const eventCount = 1 + Math.floor(Math.random() * (count > 1 ? 2 : 4));
       const newStats = { ...p.stats };
       const events = [];
       for (let e = 0; e < eventCount; e++) {
@@ -377,7 +394,6 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
       }, ...player.history].slice(0, 50)
     };
     onUpdate(updated);
-    setShowTeamSwitcher(false);
     simulateSeasons(player.advanceCount || 1, updated);
   };
 
@@ -392,23 +408,6 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
     return handleTransferOffer(team);
   };
 
-  const handleTeamChange = (newTeam) => {
-    const updated = {
-      ...player,
-      team: newTeam,
-      loanTeam: undefined,
-      history: [{
-        type: 'transfer',
-        date: new Date().toISOString(),
-        text: `Trasferimento al ${newTeam.name}!`,
-      }, ...player.history].slice(0, 50)
-    };
-    const next = buildOffers(updated);
-    onUpdate({ ...updated, market: next });
-    setOffers(next);
-    setShowTeamSwitcher(false);
-  };
-
   const getOverallColor = (ovr) => {
     if (ovr >= 85) return 'border-success';
     if (ovr >= 75) return 'border-accent';
@@ -421,13 +420,10 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
     <div className="min-h-screen p-4 pb-[calc(7rem+env(safe-area-inset-bottom))] lg:pb-4">
       <div className="max-w-7xl mx-auto">
         {/* Top bar */}
-        <div className="flex justify-between items-center mb-5">
+        <div className="flex justify-center items-center mb-5">
           <h1 className="text-xl md:text-2xl font-bold tracking-widest text-ink">
             FOOTBALL CAREER
           </h1>
-          <button onClick={onReset} className="btn-danger text-sm">
-            Nuova Carriera
-          </button>
         </div>
 
         {/* Player Header Card */}
@@ -509,9 +505,9 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap items-center gap-3 mb-5">
-          <button onClick={() => setShowTeamSwitcher(true)} className="btn-secondary">
-            Cambia Squadra
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-5">
+          <button onClick={() => setConfirmReset(true)} className="btn-danger text-xs px-3 py-1.5">
+            Nuova Carriera
           </button>
           {player.age >= 40 && (
             <button onClick={() => setShowFinal(true)} className="btn-primary ml-auto py-2 px-4">
@@ -677,6 +673,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
 
               <div className="border-t border-hairline pt-4">
                 <button
+                  ref={continueBtnRef}
                   onClick={() => setYearSummary(null)}
                   disabled={!continueReady}
                   className="btn-primary w-full relative overflow-hidden disabled:opacity-90 disabled:cursor-not-allowed"
@@ -784,14 +781,26 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
           </div>
         )}
 
-        {/* Team Switcher Modal */}
-        {showTeamSwitcher && (
-          <TeamSwitcher
-            currentTeam={player.team}
-            playerOverall={overall}
-            onSelect={handleTeamChange}
-            onClose={() => setShowTeamSwitcher(false)}
-          />
+        {/* New Career Confirmation Modal */}
+        {confirmReset && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50 fade-in">
+            <div className="bg-canvas border border-ink max-w-sm w-full p-5 rounded-2xl modal-panel">
+              <div className="text-center mb-4">
+                <div className="text-xl font-black mb-1">Nuova Carriera</div>
+                <div className="text-sm text-body">
+                  Perderai tutti i progressi. Sei sicuro?
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <button onClick={onReset} className="btn-danger w-full">
+                  Sì, ricomincia
+                </button>
+                <button onClick={() => setConfirmReset(false)} className="btn-secondary w-full">
+                  Annulla
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>

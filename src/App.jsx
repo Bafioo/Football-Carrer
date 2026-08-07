@@ -25,6 +25,7 @@ export default function App() {
   };
 
   const handleReset = () => {
+    savePrefs(player);
     clearGame();
     setPlayer(null);
   };
