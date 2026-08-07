@@ -23,6 +23,10 @@ export const clearGame = () => {
   localStorage.removeItem(STORAGE_KEY);
 };
 
+export const clearPrefs = () => {
+  localStorage.removeItem(PREFS_KEY);
+};
+
 export const savePrefs = (p) => {
   try {
     localStorage.setItem(PREFS_KEY, JSON.stringify({
