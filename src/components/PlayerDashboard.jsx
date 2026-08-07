@@ -42,6 +42,15 @@ const ROLE_COEFFS = {
   GK:  { goals: 0,  assists: 0,  cleanSheets: 9 },
 };
 
+// A star season only rarely equals (or overshoots) the games played:
+// a full-cap year stays an exception, most top years land below it.
+const goalSeason = (raw, matches) => {
+  if (raw < matches) return Math.max(0, raw);
+  const roll = Math.random();
+  if (roll < 0.05) return Math.round(matches * (1 + Math.random() * 0.1)); // rare overshoot
+  return Math.round(matches * (0.75 + Math.random() * 0.24));             // ~75-99% of games
+};
+
 export default function PlayerDashboard({ player, onUpdate, onReset }) {
   const [showTeamSwitcher, setShowTeamSwitcher] = useState(false);
   const [yearSummary, setYearSummary] = useState(null);
@@ -210,7 +219,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
       // a lighter one (0 at OVR 72, +220% / +70% at OVR 99).
       const ratGo = Math.max(0, (p.overall - 72) / 27);
       const goalBoost = (!isGk) ? (1 + ratGo * (p.role === 'ST' || p.role === 'LW' || p.role === 'RW' ? 2.2 : 0.7)) : 1;
-      const goals = clampToMatches(Math.round(coeffs.goals * f * seasonNoise() * teamFactor * seasonShape * goalBoost));
+      let goals = goalSeason(Math.round(coeffs.goals * f * seasonNoise() * teamFactor * seasonShape * goalBoost), matches);
       const assists = clampToMatches(Math.round(coeffs.assists * f * seasonNoise() * teamFactor * seasonShape));
       const cleanSheets = clampToMatches(Math.round(coeffs.cleanSheets * f * seasonNoise() * teamFactor));
       const saves = isGk
