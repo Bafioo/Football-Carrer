@@ -9,6 +9,15 @@ import MarketPanel from './MarketPanel';
 
 const LOGO_FALLBACK = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23d4d2d2"/></svg>';
 
+// Rotating phrases shown while season events "simulate"
+const SIM_MSGS = [
+  'Simulando gli eventi…',
+  'Stiletti dal mister…',
+  'Iniziano gli allenamenti…',
+  'Pressione dei tifosi…',
+  'Il campo sta parlando…',
+];
+
 // Club strength affects season production: small clubs ~25% less,
 // top clubs ~25% more. Keyed by the club OVR requirement (50/70/80).
 const TEAM_FACTORS = { 50: 0.75, 70: 1.05, 80: 1.25 };
@@ -38,6 +47,25 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
   const [yearSummary, setYearSummary] = useState(null);
   const [showFinal, setShowFinal] = useState(false);
   const [offers, setOffers] = useState(player.market || null);
+  const [continueReady, setContinueReady] = useState(false);
+  const [simMsg, setSimMsg] = useState(0);
+
+  // Continue unlocks after 2s so the season summary is readable first
+  useEffect(() => {
+    if (yearSummary) {
+      setContinueReady(false);
+      const t = setTimeout(() => setContinueReady(true), 2000);
+      return () => clearTimeout(t);
+    }
+  }, [yearSummary]);
+
+  // Rotating loading phrase while events are "simulating"
+  useEffect(() => {
+    setSimMsg(0);
+    if (continueReady) return;
+    const t = setInterval(() => setSimMsg(m => (m + 1) % SIM_MSGS.length), 600);
+    return () => clearInterval(t);
+  }, [continueReady]);
 
   // Build the 3 possible moves for the current player state.
   // Teamless: 3 join offers. Teamed: stay / transfer / loan.
@@ -171,14 +199,18 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
         events.push({ title: event.title, type: event.type, description: event.description, changes: event.statChanges, genChange });
       }
 
-      // Match availability: the stronger the player, the more he plays
+// Match availability: the stronger the player, the more he plays
       // (f to the power 1.4: ~30 games at gen 50, ~75+ at gen 90+);
       // teens and ageing players sit out more, and an injury in the year
       // cuts appearances hard.
       const injured = events.some(e => e.genChange < 0);
       const matches = Math.max(4, Math.min(100, Math.round(30 * Math.pow(f, 1.4) * seasonNoise() * ageAvailability(p.age) * (injured ? 0.55 : 1))));
       const clampToMatches = (n) => Math.max(0, Math.min(matches, n));
-      const goals = clampToMatches(Math.round(coeffs.goals * f * seasonNoise() * teamFactor * seasonShape));
+      // High-OVR bonus on goals only: attackers get the full ramp, midfielders
+      // a lighter one (0 at OVR 72, +220% / +70% at OVR 99).
+      const ratGo = Math.max(0, (p.overall - 72) / 27);
+      const goalBoost = (!isGk) ? (1 + ratGo * (p.role === 'ST' || p.role === 'LW' || p.role === 'RW' ? 2.2 : 0.7)) : 1;
+      const goals = clampToMatches(Math.round(coeffs.goals * f * seasonNoise() * teamFactor * seasonShape * goalBoost));
       const assists = clampToMatches(Math.round(coeffs.assists * f * seasonNoise() * teamFactor * seasonShape));
       const cleanSheets = clampToMatches(Math.round(coeffs.cleanSheets * f * seasonNoise() * teamFactor));
       const saves = isGk
@@ -572,7 +604,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                 </div>
               </div>
 
-              <div className={`${isGK ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2 sm:grid-cols-3'} grid gap-2 mb-4 text-center`}>
+              <div className={`${isGK ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-3'} grid gap-2 mb-4 text-center`}>
                 <div className="bg-surface-soft border border-hairline px-2 py-2">
                   <div className="text-lg font-bold">{yearSummary.matches}</div>
                   <div className="text-xs text-stone">Partite</div>
@@ -595,12 +627,12 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                 ) : (
                   <>
                     <div className="bg-surface-soft border border-hairline px-2 py-2">
-                      <div className="text-lg font-bold text-success">{yearSummary.goals}</div>
-                      <div className="text-xs text-stone">Gol</div>
-                    </div>
-                    <div className="bg-surface-soft border border-hairline px-2 py-2">
                       <div className="text-lg font-bold text-accent">{yearSummary.assists}</div>
                       <div className="text-xs text-stone">Assist</div>
+                    </div>
+                    <div className="bg-surface-soft border border-hairline px-2 py-2">
+                      <div className="text-lg font-bold text-success">{yearSummary.goals}</div>
+                      <div className="text-xs text-stone">Gol</div>
                     </div>
                   </>
                 )}
@@ -608,10 +640,19 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
 
               {yearSummary.events.length > 0 && (
                 <div className="mb-4">
-                  <div className="text-xs font-bold text-mute uppercase mb-2">Eventi della stagione</div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-xs font-bold text-mute uppercase">Eventi della stagione</div>
+                    {!continueReady && (
+                      <div className="event-enter text-xs text-accent italic">{SIM_MSGS[simMsg]}</div>
+                    )}
+                  </div>
                   <div className="space-y-2">
                     {yearSummary.events.map((event, i) => (
-                      <div key={i} className={`p-3 border-l-4 bg-surface-soft text-sm ${event.type === 'positive' ? 'border-l-success' : event.type === 'negative' ? 'border-l-danger' : 'border-l-warning'}`}>
+                      <div
+                        key={i}
+                        className={`event-enter p-3 border-l-4 bg-surface-soft text-sm ${event.type === 'positive' ? 'border-l-success' : event.type === 'negative' ? 'border-l-danger' : 'border-l-warning'}`}
+                        style={{ animationDelay: `${350 + i * 550}ms` }}
+                      >
                         <div className="font-bold flex justify-between items-center">
                           {event.title}
                           <span className={`font-black ${event.genChange > 0 ? 'text-success' : event.genChange < 0 ? 'text-danger' : 'text-stone'}`}>
@@ -626,8 +667,15 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
               )}
 
               <div className="border-t border-hairline pt-4">
-                <button onClick={() => setYearSummary(null)} className="btn-primary w-full">
-                  [x] Continua
+                <button
+                  onClick={() => setYearSummary(null)}
+                  disabled={!continueReady}
+                  className="btn-primary w-full relative overflow-hidden disabled:opacity-90 disabled:cursor-not-allowed"
+                >
+                  <span className="btn-fill-overlay absolute inset-0" aria-hidden="true" />
+                  <span className={`relative z-10 ${continueReady ? '' : 'text-canvas'}`}>
+                    {continueReady ? '[x] Continua' : 'Caricamento…'}
+                  </span>
                 </button>
               </div>
             </div>

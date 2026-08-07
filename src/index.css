@@ -88,8 +88,48 @@
 .stagger-enter > *:nth-child(2) { animation-delay: 50ms; }
 .stagger-enter > *:nth-child(3) { animation-delay: 100ms; }
 
+/* Continue button: the button itself fills left-to-right while disabled.
+   Animates transform only (scaleX), GPU-friendly. Fades out on enable. */
+.btn-fill-overlay {
+  position: absolute;
+  inset: 0;
+  background: #c8c5c5;
+  transform-origin: left;
+  transform: scaleX(0);
+  animation: progress-fill 2000ms linear forwards;
+  transition: opacity 200ms ease-out;
+}
+.btn-fill-overlay.btn-fill-done {
+  opacity: 0;
+}
+@keyframes progress-fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Season events reveal one by one during the Continue countdown */
+.event-enter {
+  opacity: 0;
+  animation: event-in 300ms var(--ease-out) forwards;
+}
+@keyframes event-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .slide-up, .modal-panel, .step-content, .stagger-enter > * {
+  .slide-up, .modal-panel, .step-content, .stagger-enter > *, .event-enter {
     animation: fade-in 200ms ease-out;
+  }
+  .btn-fill-overlay {
+    transform: scaleX(1);
+    animation: none;
   }
 }
