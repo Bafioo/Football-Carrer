@@ -3,7 +3,11 @@ import { ROLES } from '../data/roles';
 import { getFlagUrl } from '../data/nationalities';
 import { getTeamLogoUrl, getLeagueLogoUrl, getAllTeams, getTeamRequirement } from '../data/teams';
 import { getRandomEvent } from '../data/events';
+import { getCompetitionForTeam, getCompetitionForLeague, getPromotionTarget, getRelegationTarget } from '../data/competitions';
 import { genFactor, seasonNoise } from '../utils/gen';
+import { pickTrophies, TROPHY_META, trophyLabel } from '../utils/trophies';
+import { pickAwards, AWARD_META, awardLabel } from '../utils/awards';
+import { divisionOutcome } from '../utils/divisions';
 import MarketPanel from './MarketPanel';
 
 const LOGO_FALLBACK = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23d4d2d2"/></svg>';
@@ -123,7 +127,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
       { team: p.team, kind: 'stay' },
       { team: transferOffer, kind: 'transfer' },
       { team: loanOffer, kind: 'loan' },
-    ] };
+    ].filter(c => c.team) };
   };
 
   // Regenerate offers whenever a brand-new career (or a fresh session)
@@ -142,6 +146,15 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
   const isGK = player.role === 'GK';
   const seasons = player.seasons || [];
   const careerMaxGen = Math.max(overall || 0, ...seasons.map(s => s.overall || 0));
+
+  const trophyCounts = Array.from(
+    (player.trophies || []).reduce((map, t) => map.set(t, (map.get(t) || 0) + 1), new Map()),
+    ([type, count]) => ({ type, count })
+  );
+  const awardCounts = Array.from(
+    (player.awards || []).reduce((map, a) => map.set(a, (map.get(a) || 0) + 1), new Map()),
+    ([type, count]) => ({ type, count })
+  );
 
   const teamHistory = (() => {
     const byTeam = {};
@@ -190,7 +203,9 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
 
   const simulateSeasons = (count, base) => {
     let p = { ...(base || player) };
-    const agg = { matches: 0, goals: 0, assists: 0, cleanSheets: 0, saves: 0, goalsConceded: 0, events: [], loaned: false, years: 0, toSeason: p.season };
+    const agg = { matches: 0, goals: 0, assists: 0, cleanSheets: 0, saves: 0, goalsConceded: 0, events: [], loaned: false, years: 0, toSeason: p.season, trophies: [], awards: [], promoted: false, relegated: false };
+    p.trophies = p.trophies || [];
+    p.awards = p.awards || [];
 
     for (let i = 0; i < count; i++) {
       if (p.age >= 40) break;
@@ -258,6 +273,25 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
       }
       const newOverall = Math.max(1, Math.min(99, p.overall + genShift + eventImpact));
 
+      const curTeam = p.loanTeam || p.team;
+      const comp = curTeam ? getCompetitionForTeam(curTeam) : undefined;
+      const requirement = curTeam ? getTeamRequirement(curTeam.name) : 50;
+      const isStarter = matches >= 25;
+      let trophies = comp ? pickTrophies({ overall: newOverall, age: p.age + 1, requirement, tier: comp.tier, domesticRep: comp.domesticRep, continentalRep: comp.continentalRep, confederation: comp.confederation }) : [];
+      const awards = pickAwards({ role: p.role, overall: newOverall, goals, isStarter });
+      const division = comp ? divisionOutcome({ tier: comp.tier, overall: newOverall, reputation: comp.domesticRep }) : 'stay';
+      if (division === 'promotion') trophies.push('league');
+      if (division === 'relegation') trophies = [];
+
+      let nextTeam = null;
+      if (curTeam && division !== 'stay') {
+        const targetId = division === 'promotion' ? getPromotionTarget(curTeam.leagueId) : getRelegationTarget(curTeam.leagueId);
+        if (targetId) {
+          const targetComp = getCompetitionForLeague(targetId);
+          if (targetComp) nextTeam = { ...curTeam, leagueId: targetId, leagueName: targetComp.name };
+        }
+      }
+
       const wasLoaned = !!p.loanTeam;
       const history = [...p.history];
 
@@ -274,6 +308,15 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
         date: new Date().toISOString(),
         text: `Stagione ${p.season + 1} conclusa: ${matches} partite, ${goals} gol, ${assists} assist${cleanSheets ? `, ${cleanSheets} clean sheet` : ''}. Gen ${p.overall} -> ${newOverall}.`,
       });
+
+      if (division === 'promotion') {
+        history.unshift({ type: 'trophy', date: new Date().toISOString(), text: nextTeam ? `Promozione in ${nextTeam.leagueName}!` : 'Promozione!' });
+      } else if (division === 'relegation') {
+        history.unshift({ type: 'match', date: new Date().toISOString(), text: nextTeam ? `Retrocessione in ${nextTeam.leagueName}...` : 'Retrocessione...' });
+      }
+      if (trophies.length) {
+        history.unshift({ type: 'trophy', date: new Date().toISOString(), text: `Vinto ${trophies.length} trofeo/i!` });
+      }
 
       events.forEach(event => {
         history.unshift({
@@ -310,9 +353,13 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
           saves,
           goalsConceded,
           overall: newOverall,
+          trophies,
+          awards,
+          division,
         }],
         history: history.slice(0, 50),
       };
+      if (nextTeam && !wasLoaned) p = { ...p, team: nextTeam };
 
       agg.matches += matches;
       agg.goals += goals;
@@ -321,6 +368,12 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
       agg.saves += saves;
       agg.goalsConceded += goalsConceded;
       agg.events.push(...events);
+      agg.trophies.push(...trophies);
+      agg.awards.push(...awards);
+      if (division === 'promotion') agg.promoted = true;
+      if (division === 'relegation') agg.relegated = true;
+      p.trophies.push(...trophies);
+      p.awards.push(...awards);
       agg.loaned = agg.loaned || wasLoaned;
       agg.years += 1;
       agg.toSeason = p.season;
@@ -346,6 +399,10 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
       events: agg.events,
       newOverall: p.overall,
       loanReturned: agg.loaned,
+      trophies: agg.trophies,
+      awards: agg.awards,
+      promoted: agg.promoted,
+      relegated: agg.relegated,
     });
     setOffers(nextOffers);
   };
@@ -501,6 +558,51 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                 </div>
               )}
             </div>
+
+            {/* Trophy cabinet + awards */}
+            <div className="mt-3 w-full sm:w-fit">
+              <div className="text-xs font-bold text-mute uppercase mb-1.5">🏆 Trofei</div>
+              {trophyCounts.length > 0 ? (
+                <div className="flex flex-wrap gap-2 items-center">
+                  {trophyCounts.map(({ type, count }) => (
+                    <span
+                      key={type}
+                      className="flex items-center gap-1 bg-surface-soft border border-hairline px-2 py-1 rounded-full"
+                      title={trophyLabel(type)}
+                    >
+                      <img src={TROPHY_META[type]?.asset} alt={trophyLabel(type)} className="h-5 w-5 object-contain" />
+                      {count > 1 && <span className="text-xs font-bold text-ink">×{count}</span>}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-xs text-mute">Nessun trofeo vinto</div>
+              )}
+              <div className="text-xs font-bold text-mute uppercase mb-1.5 mt-2.5">Premi</div>
+              {awardCounts.length > 0 ? (
+                <div className="flex flex-wrap gap-2 items-center">
+                  {awardCounts.map(({ type, count }) => (
+                    AWARD_META[type]?.asset ? (
+                      <span
+                        key={type}
+                        className="flex items-center gap-1 bg-surface-soft border border-hairline px-2 py-1 rounded-full"
+                        title={awardLabel(type)}
+                      >
+                        <img src={AWARD_META[type].asset} alt={awardLabel(type)} className="h-5 w-5 object-contain" />
+                        {count > 1 && <span className="text-xs font-bold text-ink">×{count}</span>}
+                      </span>
+                    ) : (
+                      <span key={type} className="flex items-center gap-1 bg-surface-soft border border-hairline px-2 py-1 rounded-full text-xs font-bold text-ink" title={awardLabel(type)}>
+                        {awardLabel(type)}
+                        {count > 1 && <span className="text-xs font-bold text-ink">×{count}</span>}
+                      </span>
+                    )
+                  ))}
+                </div>
+              ) : (
+                <div className="text-xs text-mute">Nessun premio individuale</div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -643,6 +745,67 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                 )}
               </div>
 
+              {(yearSummary.trophies.length > 0 || yearSummary.awards.length > 0 || yearSummary.promoted || yearSummary.relegated) && (
+                <div className="mb-4">
+                  {yearSummary.trophies.length > 0 && (
+                    <div className="mb-2">
+                      <div className="text-xs font-bold text-mute uppercase mb-1.5">Trofei vinti</div>
+                      <div className="flex flex-wrap gap-2 items-center">
+                        {yearSummary.trophies.map((t, i) => (
+                          <span
+                            key={i}
+                            className="flex items-center gap-1 bg-surface-soft border border-hairline px-2 py-1 rounded-full"
+                            title={trophyLabel(t)}
+                          >
+                            <img src={TROPHY_META[t]?.asset} alt={trophyLabel(t)} className="h-5 w-5 object-contain" />
+                            <span className="text-xs font-bold text-ink">{trophyLabel(t)}</span>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {yearSummary.awards.length > 0 && (
+                    <div className="mb-2">
+                      <div className="text-xs font-bold text-mute uppercase mb-1.5">Premi individuali</div>
+                      <div className="flex flex-wrap gap-2 items-center">
+                        {yearSummary.awards.map((aw, i) => (
+                          AWARD_META[aw]?.asset ? (
+                            <span
+                              key={i}
+                              className="flex items-center gap-1 bg-surface-soft border border-hairline px-2 py-1 rounded-full"
+                              title={awardLabel(aw)}
+                            >
+                              <img src={AWARD_META[aw].asset} alt={awardLabel(aw)} className="h-5 w-5 object-contain" />
+                              <span className="text-xs font-bold text-ink">{awardLabel(aw)}</span>
+                            </span>
+                          ) : (
+                            <span key={i} className="bg-surface-soft border border-hairline px-2 py-1 rounded-full text-xs font-bold text-ink">
+                              {awardLabel(aw)}
+                            </span>
+                          )
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {(yearSummary.promoted || yearSummary.relegated) && (
+                    <div className="flex flex-wrap gap-2 items-center">
+                      {yearSummary.promoted && (
+                        <span className="flex items-center gap-1.5 bg-surface-soft border border-success px-2.5 py-1 rounded-full">
+                          <img src="/Trophys/Altro/promotion_icon.png" alt="Promozione" className="h-4 w-4 object-contain" />
+                          <span className="text-xs font-bold text-success">PROMOZIONE!</span>
+                        </span>
+                      )}
+                      {yearSummary.relegated && (
+                        <span className="flex items-center gap-1.5 bg-surface-soft border border-danger px-2.5 py-1 rounded-full">
+                          <img src="/Trophys/Altro/relegation_icon.png" alt="Retrocessione" className="h-4 w-4 object-contain" />
+                          <span className="text-xs font-bold text-danger">RETROCESSIONE</span>
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {yearSummary.events.length > 0 && (
                 <div className="mb-4">
                   <div className="flex items-center justify-between mb-2">
@@ -745,6 +908,9 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                   <span className="text-sm font-bold text-warning">MIGLIOR STAGIONE: S{bestSeason.season}</span>
                   <span className="text-sm text-body">
                     {bestSeason.team.name}{bestSeason.loaned ? ' (prestito)' : ''} - {bestSeason.goals} gol, {bestSeason.assists} assist{isGK ? `, ${bestSeason.saves || 0} parate, ${bestSeason.cleanSheets} cs, ${bestSeason.goalsConceded || 0} subiti` : ''}
+                  </span>
+                  <span className="text-sm text-body">
+                    Trofei: <span className="text-ink font-bold">{player.trophies.length}</span> · Premi: <span className="text-ink font-bold">{player.awards.length}</span>
                   </span>
                 </div>
               )}

@@ -68,6 +68,8 @@ export default function PlayerCreation({ onCreate }) {
       saves: 0,
       goalsConceded: 0,
       seasons: [],
+      trophies: [],
+      awards: [],
       advanceCount,
       history: [{
         type: 'creation',
