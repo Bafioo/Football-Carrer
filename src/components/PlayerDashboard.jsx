@@ -5,7 +5,7 @@ import { getTeamLogoUrl, getLeagueLogoUrl, getAllTeams, getTeamRequirement } fro
 import { getRandomEvent } from '../data/events';
 import { getCompetitionForTeam, getCompetitionForLeague, getPromotionTarget, getRelegationTarget } from '../data/competitions';
 import { genFactor, seasonNoise } from '../utils/gen';
-import { pickTrophies, TROPHY_META, trophyLabel } from '../utils/trophies';
+import { pickTrophies, trophyLabel, trophyAsset, normalizeTrophy } from '../utils/trophies';
 import { pickAwards, AWARD_META, awardLabel } from '../utils/awards';
 import { divisionOutcome } from '../utils/divisions';
 import MarketPanel from './MarketPanel';
@@ -148,8 +148,14 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
   const careerMaxGen = Math.max(overall || 0, ...seasons.map(s => s.overall || 0));
 
   const trophyCounts = Array.from(
-    (player.trophies || []).reduce((map, t) => map.set(t, (map.get(t) || 0) + 1), new Map()),
-    ([type, count]) => ({ type, count })
+    (player.trophies || []).reduce((map, t) => {
+      const { type, country } = normalizeTrophy(t);
+      const key = `${type}|${country || ''}`;
+      const cur = map.get(key) || { type, country, count: 0 };
+      cur.count += 1;
+      return map.set(key, cur);
+    }, new Map()),
+    ([, entry]) => entry
   );
   const awardCounts = Array.from(
     (player.awards || []).reduce((map, a) => map.set(a, (map.get(a) || 0) + 1), new Map()),
@@ -277,10 +283,10 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
       const comp = curTeam ? getCompetitionForTeam(curTeam) : undefined;
       const requirement = curTeam ? getTeamRequirement(curTeam.name) : 50;
       const isStarter = matches >= 25;
-      let trophies = comp ? pickTrophies({ overall: newOverall, age: p.age + 1, requirement, tier: comp.tier, domesticRep: comp.domesticRep, continentalRep: comp.continentalRep, confederation: comp.confederation }) : [];
+      let trophies = comp ? pickTrophies({ overall: newOverall, age: p.age + 1, requirement, tier: comp.tier, domesticRep: comp.domesticRep, continentalRep: comp.continentalRep, confederation: comp.confederation }).map(t => ({ type: t, country: comp.country })) : [];
       const awards = pickAwards({ role: p.role, overall: newOverall, goals, isStarter });
       const division = comp ? divisionOutcome({ tier: comp.tier, overall: newOverall, reputation: comp.domesticRep }) : 'stay';
-      if (division === 'promotion') trophies.push('league');
+      if (division === 'promotion') trophies.push({ type: 'league', country: comp?.country });
       if (division === 'relegation') trophies = [];
 
       let nextTeam = null;
@@ -564,13 +570,13 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
               <div className="text-xs font-bold text-mute uppercase mb-1.5">🏆 Trofei</div>
               {trophyCounts.length > 0 ? (
                 <div className="flex flex-wrap gap-2 items-center">
-                  {trophyCounts.map(({ type, count }) => (
+                  {trophyCounts.map(({ type, country, count }) => (
                     <span
-                      key={type}
+                      key={`${type}|${country || ''}`}
                       className="flex items-center gap-1 bg-surface-soft border border-hairline px-2 py-1 rounded-full"
-                      title={trophyLabel(type)}
+                      title={trophyLabel(type, country)}
                     >
-                      <img src={TROPHY_META[type]?.asset} alt={trophyLabel(type)} className="h-5 w-5 object-contain" />
+                      <img src={trophyAsset(type, country)} alt={trophyLabel(type, country)} className="h-5 w-5 object-contain" />
                       {count > 1 && <span className="text-xs font-bold text-ink">×{count}</span>}
                     </span>
                   ))}
@@ -751,16 +757,19 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                     <div className="mb-2">
                       <div className="text-xs font-bold text-mute uppercase mb-1.5">Trofei vinti</div>
                       <div className="flex flex-wrap gap-2 items-center">
-                        {yearSummary.trophies.map((t, i) => (
-                          <span
-                            key={i}
-                            className="flex items-center gap-1 bg-surface-soft border border-hairline px-2 py-1 rounded-full"
-                            title={trophyLabel(t)}
-                          >
-                            <img src={TROPHY_META[t]?.asset} alt={trophyLabel(t)} className="h-5 w-5 object-contain" />
-                            <span className="text-xs font-bold text-ink">{trophyLabel(t)}</span>
-                          </span>
-                        ))}
+                        {yearSummary.trophies.map((t, i) => {
+                          const { type, country } = normalizeTrophy(t);
+                          return (
+                            <span
+                              key={i}
+                              className="flex items-center gap-1 bg-surface-soft border border-hairline px-2 py-1 rounded-full"
+                              title={trophyLabel(type, country)}
+                            >
+                              <img src={trophyAsset(type, country)} alt={trophyLabel(type, country)} className="h-5 w-5 object-contain" />
+                              <span className="text-xs font-bold text-ink">{trophyLabel(type, country)}</span>
+                            </span>
+                          );
+                        })}
                       </div>
                     </div>
                   )}

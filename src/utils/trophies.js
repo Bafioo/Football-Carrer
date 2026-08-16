@@ -6,6 +6,27 @@ export const TROPHY_META = {
   club_world_cup: { name: 'Mondiale per Club', category: 'Internazionali', asset: '/trophies/international/club-world-trophy-2025.png' },
 }
 
+// Country-specific trophies: a team only wins domestic trophies of its own
+// country (e.g. a German team wins the DFB-Pokal, not the FA Cup).
+const COUNTRY_TROPHY_META = {
+  Italia: {
+    league: { name: 'Scudetto', asset: '/trophies/leagues/serie-b-trophy.svg' },
+    cup: { name: 'Coppa Italia', asset: '/trophies/national-cups/coppa-italia.svg' },
+  },
+  Inghilterra: {
+    league: { name: 'Premier League', asset: '/trophies/leagues/premier-league.png' },
+    cup: { name: 'FA Cup', asset: '/trophies/national-cups/fa-cup.png' },
+  },
+  Spagna: {
+    league: { name: 'La Liga', asset: '/trophies/leagues/la-liga.png' },
+    cup: { name: 'Copa del Rey', asset: '/trophies/national-cups/copa-del-rey.svg' },
+  },
+  Germania: {
+    league: { name: 'Meisterschale', asset: '/trophies/leagues/meisterschale.png' },
+    cup: { name: 'DFB-Pokal', asset: '/trophies/national-cups/german-cup.svg' },
+  },
+}
+
 const TABLES = {
   league: [0, 0.01, 0.05, 0.25, 0.45, 0.70],
   cup: [0.01, 0.04, 0.10, 0.25, 0.35, 0.40],
@@ -64,4 +85,15 @@ export const pickTrophies = (params) => {
   return won
 }
 
-export const trophyLabel = (type) => TROPHY_META[type]?.name ?? type
+export const trophyLabel = (type, country) => {
+  const meta = (country && COUNTRY_TROPHY_META[country]?.[type]) || TROPHY_META[type]
+  return meta?.name ?? type
+}
+
+export const trophyAsset = (type, country) => {
+  const meta = (country && COUNTRY_TROPHY_META[country]?.[type]) || TROPHY_META[type]
+  return meta?.asset
+}
+
+// Backwards-compatible: older saves store plain type strings, new ones store { type, country }
+export const normalizeTrophy = (t) => (typeof t === 'string' ? { type: t, country: undefined } : t)
