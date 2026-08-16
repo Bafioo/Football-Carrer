@@ -34,6 +34,13 @@ const Ri = [
 const REP_PROMO = [1, 1.1, 1.2, 1.3, 1.5, 1.75, 2]
 const REP_RELEG = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]
 
+// Big clubs are far less likely to be relegated than small ones.
+const RELEG_STRENGTH = (requirement) => {
+  if (requirement >= 80) return 0.3
+  if (requirement >= 70) return 0.7
+  return 1.2
+}
+
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v))
 
 export const tableAt = (table, overall) => {
@@ -43,12 +50,13 @@ export const tableAt = (table, overall) => {
   return table[table.length - 1][1]
 }
 
-export const divisionOutcome = ({ tier, overall, reputation = 0 }) => {
+export const divisionOutcome = ({ tier, overall, reputation = 0, requirement = 50 }) => {
   const rep = clamp(reputation, 0, 6)
   const roll = Math.random()
   if (tier === 1) {
-    const r = clamp(0.6 + (overall - 65) * ((1.1 - 0.6) / (85 - 65)), 0.6, 1.1)
-    const prob = clamp(0.05 + 0.1 * ((1.1 - r) / (1.1 - 0.6)), 0.05, 0.15)
+    // A star keeps a small club up; a weak team goes down. Top clubs rarely drop.
+    const base = clamp(0.25 - (overall - 60) * 0.01, 0.01, 0.25)
+    const prob = clamp(base * RELEG_STRENGTH(requirement), 0.003, 0.25)
     return roll < prob ? 'relegation' : 'stay'
   }
   if (tier === 3) {

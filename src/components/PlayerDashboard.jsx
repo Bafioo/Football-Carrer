@@ -285,7 +285,10 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
       const isStarter = matches >= 25;
       let trophies = comp ? pickTrophies({ overall: newOverall, age: p.age + 1, requirement, tier: comp.tier, domesticRep: comp.domesticRep, continentalRep: comp.continentalRep, confederation: comp.confederation }).map(t => ({ type: t, country: comp.country })) : [];
       const awards = pickAwards({ role: p.role, overall: newOverall, goals, isStarter });
-      const division = comp ? divisionOutcome({ tier: comp.tier, overall: newOverall, reputation: comp.domesticRep }) : 'stay';
+      let division = comp ? divisionOutcome({ tier: comp.tier, overall: newOverall, reputation: comp.domesticRep, requirement }) : 'stay';
+      // No lower tier in the game: a Serie B team cannot be "relegated" to nothing.
+      if (curTeam && division === 'relegation' && !getRelegationTarget(curTeam.leagueId)) division = 'stay';
+      if (curTeam && division === 'promotion' && !getPromotionTarget(curTeam.leagueId)) division = 'stay';
       if (division === 'promotion') trophies.push({ type: 'league', country: comp?.country });
       if (division === 'relegation') trophies = [];
 

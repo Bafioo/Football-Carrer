@@ -49,10 +49,17 @@ const deltaFactor = (delta) => {
   return 0.4
 }
 
+// Team strength modulates how easily a club wins trophies: promoted or small
+// clubs rarely win continental silverware, top clubs contend every year.
+const TEAM_FACTORS = {
+  top: { league: 1.0, cup: 1.0, continental_primary: 1.0, continental_secondary: 0.5, club_world_cup: 1.0 },
+  mid: { league: 0.5, cup: 0.7, continental_primary: 0.35, continental_secondary: 1.0, club_world_cup: 0.4 },
+  small: { league: 0.15, cup: 0.5, continental_primary: 0.03, continental_secondary: 0.4, club_world_cup: 0.02 },
+}
+
 export const pickTrophies = (params) => {
   const {
     overall,
-    age,
     requirement,
     tier,
     domesticRep,
@@ -63,10 +70,11 @@ export const pickTrophies = (params) => {
 
   const mult = { league: 1, cup: 1, continental_primary: 1, continental_secondary: 1, club_world_cup: 1, ...(multipliers || {}) }
   const p = deltaFactor(overall - requirement)
+  const strength = requirement >= 80 ? 'top' : requirement >= 70 ? 'mid' : 'small'
   const won = []
 
   const roll = (type, table, rep) => {
-    if (Math.random() < tableAt(table, rep) * p * mult[type]) won.push(type)
+    if (Math.random() < tableAt(table, rep) * p * mult[type] * TEAM_FACTORS[strength][type]) won.push(type)
   }
 
   roll('league', TABLES.league, domesticRep)
@@ -77,10 +85,12 @@ export const pickTrophies = (params) => {
   if (continental) {
     roll('continental_primary', TABLES.continental_primary, continentalRep)
     roll('continental_secondary', TABLES.continental_secondary, continentalRep)
+    // Only a club that wins the Champions League takes part in the Club World Cup.
+    if (won.includes('continental_primary')) {
+      const cwc = CLUB_WORLD_TABLES[(confederation || '').toLowerCase()] || CLUB_WORLD_TABLES.uefa
+      roll('club_world_cup', cwc, continentalRep)
+    }
   }
-
-  const cwc = CLUB_WORLD_TABLES[(confederation || '').toLowerCase()] || CLUB_WORLD_TABLES.uefa
-  if (continental && age >= 33) roll('club_world_cup', cwc, continentalRep)
 
   return won
 }
