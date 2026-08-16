@@ -12,6 +12,8 @@ import MarketPanel from './MarketPanel';
 
 const LOGO_FALLBACK = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23d4d2d2"/></svg>';
 
+const AWARD_FALLBACK = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="%23232323"/><circle cx="50" cy="50" r="34" fill="none" stroke="%23ff9f0a" stroke-width="6"/><path d="M50 32l4.6 9.3 10.3 1.5-7.5 7.3 1.8 10.2-9.2-4.9-9.2 4.9 1.8-10.2-7.5-7.3 10.3-1.5z" fill="%23ff9f0a"/></svg>';
+
 // Rotating phrases shown while season events "simulate"
 const SIM_MSGS = [
   'Simulando gli eventi…',
@@ -576,18 +578,15 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
             <div className="mt-3 w-full">
               <div className="text-xs font-bold text-mute uppercase mb-1.5">🏆 Trofei</div>
               {trophyCounts.length > 0 ? (
-                <div className="flex flex-wrap gap-1.5 items-center">
+                <div className="flex flex-wrap gap-2 items-center">
                   {trophyCounts.map(({ type, leagueId, country, count }) => (
                     <span
                       key={`${type}|${leagueId || ''}|${country || ''}`}
-                      className="trophy-chip"
+                      className="trophy-tile"
                       title={trophyLabel(type, leagueId, country)}
                     >
-                      <span className="trophy-chip-icon">
-                        <img src={trophyAsset(type, leagueId, country)} alt="" className="trophy-chip-img" />
-                      </span>
-                      <span className="trophy-chip-label">{trophyLabel(type, leagueId, country)}</span>
-                      {count > 1 && <span className="trophy-chip-count">×{count}</span>}
+                      <img src={trophyAsset(type, leagueId, country)} alt="" className="trophy-tile-img" />
+                      {count > 1 && <span className="trophy-tile-count">×{count}</span>}
                     </span>
                   ))}
                 </div>
@@ -596,22 +595,16 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
               )}
               <div className="text-xs font-bold text-mute uppercase mb-1.5 mt-2.5">Premi</div>
               {awardCounts.length > 0 ? (
-                <div className="flex flex-wrap gap-1.5 items-center">
+                <div className="flex flex-wrap gap-2 items-center">
                   {awardCounts.map(({ type, count }) => (
-                    AWARD_META[type]?.asset ? (
-                      <span key={type} className="trophy-chip" title={awardLabel(type)}>
-                        <span className="trophy-chip-icon">
-                          <img src={AWARD_META[type].asset} alt="" className="trophy-chip-img" />
-                        </span>
-                        <span className="trophy-chip-label">{awardLabel(type)}</span>
-                        {count > 1 && <span className="trophy-chip-count">×{count}</span>}
-                      </span>
-                    ) : (
-                      <span key={type} className="trophy-chip" title={awardLabel(type)}>
-                        <span className="trophy-chip-label">{awardLabel(type)}</span>
-                        {count > 1 && <span className="trophy-chip-count">×{count}</span>}
-                      </span>
-                    )
+                    <span key={type} className="trophy-tile" title={awardLabel(type)}>
+                      <img
+                        src={AWARD_META[type]?.asset || AWARD_FALLBACK}
+                        alt=""
+                        className="trophy-tile-img"
+                      />
+                      {count > 1 && <span className="trophy-tile-count">×{count}</span>}
+                    </span>
                   ))}
                 </div>
               ) : (
