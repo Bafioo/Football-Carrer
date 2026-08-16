@@ -124,6 +124,64 @@
   }
 }
 
+/* Trophy/award chips: icon in a circular surface + label, count badge.
+   Transitions only transform/border-color/background-color, ease-out, <300ms. */
+.trophy-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.1875rem 0.5rem 0.1875rem 0.25rem;
+  background: #232323;
+  border: 1px solid rgba(253, 252, 252, 0.3);
+  border-radius: 9999px;
+  transition: transform 160ms var(--ease-out), border-color 160ms var(--ease-out), background-color 160ms var(--ease-out);
+}
+.trophy-chip-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  background: #2b2b2b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.trophy-chip-img {
+  width: 1.25rem;
+  height: 1.25rem;
+  object-fit: contain;
+}
+.trophy-chip-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #fdfdfc;
+  white-space: nowrap;
+}
+.trophy-chip-count {
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #fdfdfc;
+  background: #2b2b2b;
+  border-radius: 9999px;
+  padding: 0 0.3125rem;
+  line-height: 1.125rem;
+}
+.trophy-chip:active {
+  transform: scale(0.97);
+}
+@media (hover: hover) and (pointer: fine) {
+  .trophy-chip:hover {
+    transform: translateY(-1px);
+    border-color: rgba(253, 252, 252, 0.75);
+    background: #2b2b2b;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .trophy-chip {
+    transition: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .slide-up, .modal-panel, .step-content, .stagger-enter > *, .event-enter {
     animation: fade-in 200ms ease-out;

@@ -171,6 +171,8 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
           min: s.season,
           max: s.season,
           loaned: !!s.loaned,
+          trophies: [...(s.trophies || [])],
+          awards: [...(s.awards || [])],
           stats: {
             matches: s.matches,
             goals: s.goals,
@@ -185,6 +187,8 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
         e.min = Math.min(e.min, s.season);
         e.max = Math.max(e.max, s.season);
         if (s.loaned) e.loaned = true;
+        e.trophies.push(...(s.trophies || []));
+        e.awards.push(...(s.awards || []));
         e.stats.matches += s.matches;
         e.stats.goals += s.goals;
         e.stats.assists += s.assists;
@@ -195,7 +199,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
     });
     const list = Object.values(byTeam);
     if (player.team && !list.some(e => e.team.id === player.team.id)) {
-      list.push({ team: player.team, min: player.season, max: null, stats: null, loaned: false });
+      list.push({ team: player.team, min: player.season, max: null, stats: null, trophies: [], awards: [], loaned: false });
     }
     return list.sort((a, b) => a.min - b.min);
   })();
@@ -532,18 +536,18 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                   <img
                     src={getTeamLogoUrl(player.loanTeam || player.team)}
                     alt={player.loanTeam?.name || player.team.name}
-                    className="w-7 h-7 object-contain"
+                    className="w-7 h-7 object-contain shrink-0"
                     onError={(e) => { e.target.src = LOGO_FALLBACK; }}
                   />
-                  <div className="text-left">
-                    <div className="font-bold text-sm leading-tight">{player.loanTeam ? player.loanTeam.name : player.team.name}</div>
+                  <div className="text-left min-w-0">
+                    <div className="font-bold text-sm leading-tight truncate max-w-[10rem]">{player.loanTeam ? player.loanTeam.name : player.team.name}</div>
                     {player.loanTeam && (
                       <div className="text-xs text-warning font-bold leading-tight">
                         PROPRIETA: {player.team.name}
                       </div>
                     )}
                   </div>
-                  <div className="flex items-center gap-1.5 border-l border-hairline pl-2">
+                  <div className="flex items-center gap-1.5 border-l border-hairline pl-2 shrink-0">
                     <img
                       src={getLeagueLogoUrl(player.loanTeam || player.team)}
                       alt={player.loanTeam?.leagueName || player.team.leagueName}
@@ -557,7 +561,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                 </div>
               ) : (
                 <div className="flex w-full sm:w-fit items-center justify-center gap-2 bg-surface-soft border border-hairline px-2.5 py-1 rounded-full">
-                  <div className="w-7 h-7 rounded-full bg-ink text-canvas flex items-center justify-center text-sm font-bold">
+                  <div className="w-7 h-7 rounded-full bg-ink text-canvas flex items-center justify-center text-sm font-bold shrink-0">
                     ?
                   </div>
                   <div className="text-left">
@@ -569,18 +573,21 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
             </div>
 
             {/* Trophy cabinet + awards */}
-            <div className="mt-3 w-full sm:w-fit">
+            <div className="mt-3 w-full">
               <div className="text-xs font-bold text-mute uppercase mb-1.5">🏆 Trofei</div>
               {trophyCounts.length > 0 ? (
-                <div className="flex flex-wrap gap-2 items-center">
+                <div className="flex flex-wrap gap-1.5 items-center">
                   {trophyCounts.map(({ type, leagueId, country, count }) => (
                     <span
                       key={`${type}|${leagueId || ''}|${country || ''}`}
-                      className="flex items-center gap-1 bg-surface-soft border border-hairline px-2 py-1 rounded-full"
+                      className="trophy-chip"
                       title={trophyLabel(type, leagueId, country)}
                     >
-                      <img src={trophyAsset(type, leagueId, country)} alt={trophyLabel(type, leagueId, country)} className="h-5 w-5 object-contain" />
-                      {count > 1 && <span className="text-xs font-bold text-ink">×{count}</span>}
+                      <span className="trophy-chip-icon">
+                        <img src={trophyAsset(type, leagueId, country)} alt="" className="trophy-chip-img" />
+                      </span>
+                      <span className="trophy-chip-label">{trophyLabel(type, leagueId, country)}</span>
+                      {count > 1 && <span className="trophy-chip-count">×{count}</span>}
                     </span>
                   ))}
                 </div>
@@ -589,21 +596,20 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
               )}
               <div className="text-xs font-bold text-mute uppercase mb-1.5 mt-2.5">Premi</div>
               {awardCounts.length > 0 ? (
-                <div className="flex flex-wrap gap-2 items-center">
+                <div className="flex flex-wrap gap-1.5 items-center">
                   {awardCounts.map(({ type, count }) => (
                     AWARD_META[type]?.asset ? (
-                      <span
-                        key={type}
-                        className="flex items-center gap-1 bg-surface-soft border border-hairline px-2 py-1 rounded-full"
-                        title={awardLabel(type)}
-                      >
-                        <img src={AWARD_META[type].asset} alt={awardLabel(type)} className="h-5 w-5 object-contain" />
-                        {count > 1 && <span className="text-xs font-bold text-ink">×{count}</span>}
+                      <span key={type} className="trophy-chip" title={awardLabel(type)}>
+                        <span className="trophy-chip-icon">
+                          <img src={AWARD_META[type].asset} alt="" className="trophy-chip-img" />
+                        </span>
+                        <span className="trophy-chip-label">{awardLabel(type)}</span>
+                        {count > 1 && <span className="trophy-chip-count">×{count}</span>}
                       </span>
                     ) : (
-                      <span key={type} className="flex items-center gap-1 bg-surface-soft border border-hairline px-2 py-1 rounded-full text-xs font-bold text-ink" title={awardLabel(type)}>
-                        {awardLabel(type)}
-                        {count > 1 && <span className="text-xs font-bold text-ink">×{count}</span>}
+                      <span key={type} className="trophy-chip" title={awardLabel(type)}>
+                        <span className="trophy-chip-label">{awardLabel(type)}</span>
+                        {count > 1 && <span className="trophy-chip-count">×{count}</span>}
                       </span>
                     )
                   ))}
@@ -929,22 +935,74 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
 
               <div className="text-xs font-bold text-mute uppercase mb-2">Squadre in carriera</div>
               <div className="space-y-2 mb-4">
-                {teamHistory.map((entry, i) => (
-                  <div key={i} className="flex items-center gap-3 bg-surface-soft border border-hairline px-3 py-1.5">
-                    {entry.loaned && (
-                      <span className="text-stone font-bold text-lg leading-none shrink-0">→</span>
-                    )}
-                    <img src={getTeamLogoUrl(entry.team)} alt={entry.team.name} className="w-8 h-8 object-contain shrink-0" />
-                    <div className="min-w-0">
-                      <div className="font-bold text-sm truncate">
-                        {entry.team.name}
+                {teamHistory.map((entry, i) => {
+                  const teamTrophyCounts = Array.from(
+                    (entry.trophies || []).reduce((map, t) => {
+                      const { type, leagueId, country } = normalizeTrophy(t);
+                      const key = `${type}|${leagueId || ''}|${country || ''}`;
+                      const cur = map.get(key) || { type, leagueId, country, count: 0 };
+                      cur.count += 1;
+                      return map.set(key, cur);
+                    }, new Map()),
+                    ([, e]) => e
+                  );
+                  const teamAwardCounts = Array.from(
+                    (entry.awards || []).reduce((map, a) => map.set(a, (map.get(a) || 0) + 1), new Map()),
+                    ([type, count]) => ({ type, count })
+                  );
+                  const hasHonors = teamTrophyCounts.length > 0 || teamAwardCounts.length > 0;
+                  return (
+                    <div key={i} className="bg-surface-soft border border-hairline px-3 py-1.5">
+                      <div className="flex items-center gap-3">
+                        {entry.loaned && (
+                          <span className="text-stone font-bold text-lg leading-none shrink-0">→</span>
+                        )}
+                        <img src={getTeamLogoUrl(entry.team)} alt={entry.team.name} className="w-8 h-8 object-contain shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <div className="font-bold text-sm truncate">
+                            {entry.team.name}
+                          </div>
+                          <div className="text-xs text-stone">
+                            {entry.min === entry.max ? `Stagione ${entry.min}` : `Stagioni ${entry.min}-${entry.max}`}
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-xs text-stone">
-                        {entry.min === entry.max ? `Stagione ${entry.min}` : `Stagioni ${entry.min}-${entry.max}`}
-                      </div>
+                      {hasHonors && (
+                        <div className="flex flex-wrap gap-1 items-center mt-1.5 pl-11">
+                          {teamTrophyCounts.map(({ type, leagueId, country, count }) => (
+                            <span
+                              key={`t|${type}|${leagueId || ''}|${country || ''}`}
+                              className="trophy-chip"
+                              title={trophyLabel(type, leagueId, country)}
+                            >
+                              <span className="trophy-chip-icon">
+                                <img src={trophyAsset(type, leagueId, country)} alt="" className="trophy-chip-img" />
+                              </span>
+                              <span className="trophy-chip-label">{trophyLabel(type, leagueId, country)}</span>
+                              {count > 1 && <span className="trophy-chip-count">×{count}</span>}
+                            </span>
+                          ))}
+                          {teamAwardCounts.map(({ type, count }) => (
+                            AWARD_META[type]?.asset ? (
+                              <span key={`a|${type}`} className="trophy-chip" title={awardLabel(type)}>
+                                <span className="trophy-chip-icon">
+                                  <img src={AWARD_META[type].asset} alt="" className="trophy-chip-img" />
+                                </span>
+                                <span className="trophy-chip-label">{awardLabel(type)}</span>
+                                {count > 1 && <span className="trophy-chip-count">×{count}</span>}
+                              </span>
+                            ) : (
+                              <span key={`a|${type}`} className="trophy-chip" title={awardLabel(type)}>
+                                <span className="trophy-chip-label">{awardLabel(type)}</span>
+                                {count > 1 && <span className="trophy-chip-count">×{count}</span>}
+                              </span>
+                            )
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <div className="flex flex-col gap-2">
