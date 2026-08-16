@@ -920,9 +920,6 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                   <span className="text-sm text-body">
                     {bestSeason.team.name}{bestSeason.loaned ? ' (prestito)' : ''} - {bestSeason.goals} gol, {bestSeason.assists} assist{isGK ? `, ${bestSeason.saves || 0} parate, ${bestSeason.cleanSheets} cs, ${bestSeason.goalsConceded || 0} subiti` : ''}
                   </span>
-                  <span className="text-sm text-body">
-                    Trofei: <span className="text-ink font-bold">{player.trophies.length}</span> · Premi: <span className="text-ink font-bold">{player.awards.length}</span>
-                  </span>
                 </div>
               )}
 
