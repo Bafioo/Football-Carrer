@@ -791,13 +791,13 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                     <div className="flex flex-wrap gap-2 items-center">
                       {yearSummary.promoted && (
                         <span className="flex items-center gap-1.5 bg-surface-soft border border-success px-2.5 py-1 rounded-full">
-                          <img src="/Trophys/Altro/promotion_icon.png" alt="Promozione" className="h-4 w-4 object-contain" />
+                          <img src="/trophies/misc/promotion-icon.png" alt="Promozione" className="h-4 w-4 object-contain" />
                           <span className="text-xs font-bold text-success">PROMOZIONE!</span>
                         </span>
                       )}
                       {yearSummary.relegated && (
                         <span className="flex items-center gap-1.5 bg-surface-soft border border-danger px-2.5 py-1 rounded-full">
-                          <img src="/Trophys/Altro/relegation_icon.png" alt="Retrocessione" className="h-4 w-4 object-contain" />
+                          <img src="/trophies/misc/relegation-icon.png" alt="Retrocessione" className="h-4 w-4 object-contain" />
                           <span className="text-xs font-bold text-danger">RETROCESSIONE</span>
                         </span>
                       )}

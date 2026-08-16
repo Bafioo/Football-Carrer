@@ -1,9 +1,9 @@
 export const TROPHY_META = {
-  league: { name: 'Campionato', category: 'Campionati', asset: '/Trophys/Campionati/Meisterschale.png' },
-  cup: { name: 'Coppa Nazionale', category: 'Coppe-Nazionali', asset: '/Trophys/Coppe-Nazionali/FA_Cup.png' },
-  continental_primary: { name: 'Coppa Continentale', category: 'Internazionali', asset: '/Trophys/Internazionali/Champions_league.svg' },
-  continental_secondary: { name: 'Coppa Continentale Secondaria', category: 'Internazionali', asset: '/Trophys/Internazionali/Champions_league.svg' },
-  club_world_cup: { name: 'Mondiale per Club', category: 'Internazionali', asset: '/Trophys/Internazionali/club_world_Trophy_2025.png' },
+  league: { name: 'Campionato', category: 'Campionati', asset: '/trophies/leagues/meisterschale.png' },
+  cup: { name: 'Coppa Nazionale', category: 'Coppe-Nazionali', asset: '/trophies/national-cups/fa-cup.png' },
+  continental_primary: { name: 'Coppa Continentale', category: 'Internazionali', asset: '/trophies/international/champions-league.svg' },
+  continental_secondary: { name: 'Coppa Continentale Secondaria', category: 'Internazionali', asset: '/trophies/international/champions-league.svg' },
+  club_world_cup: { name: 'Mondiale per Club', category: 'Internazionali', asset: '/trophies/international/club-world-trophy-2025.png' },
 }
 
 const TABLES = {

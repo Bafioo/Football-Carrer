@@ -1,7 +1,7 @@
 export const AWARD_META = {
-  ballon_dor: { name: 'Pallone d\'Oro', asset: '/Trophys/Individuali/ballon-dor-svgrepo-com.svg' },
+  ballon_dor: { name: 'Pallone d\'Oro', asset: '/trophies/individual/ballon-dor.svg' },
   golden_glove: { name: 'Guanto d\'Oro', asset: null },
-  golden_boot: { name: 'Scarpa d\'Oro', asset: '/Trophys/Individuali/Bota_de_oro.svg' }
+  golden_boot: { name: 'Scarpa d\'Oro', asset: '/trophies/individual/golden-boot.svg' }
 }
 
 const ballonDorProb = (overall) => {
