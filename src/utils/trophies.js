@@ -10,7 +10,7 @@ export const TROPHY_META = {
 // country (e.g. a German team wins the DFB-Pokal, not the FA Cup).
 const COUNTRY_TROPHY_META = {
   Italia: {
-    league: { name: 'Scudetto', asset: '/trophies/leagues/serie-b-trophy.svg' },
+    league: { name: 'Campionato Italiano', asset: '/trophies/leagues/serie-b-trophy.svg' },
     cup: { name: 'Coppa Italia', asset: '/trophies/national-cups/coppa-italia.svg' },
   },
   Inghilterra: {
@@ -22,9 +22,28 @@ const COUNTRY_TROPHY_META = {
     cup: { name: 'Copa del Rey', asset: '/trophies/national-cups/copa-del-rey.svg' },
   },
   Germania: {
-    league: { name: 'Meisterschale', asset: '/trophies/leagues/meisterschale.png' },
+    league: { name: 'Bundesliga', asset: '/trophies/leagues/meisterschale.png' },
     cup: { name: 'DFB-Pokal', asset: '/trophies/national-cups/german-cup.svg' },
   },
+  Francia: {
+    league: { name: 'Ligue 1', asset: '/trophies/leagues/meisterschale.png' },
+    cup: { name: 'Coupe de France', asset: '/trophies/national-cups/fa-cup.png' },
+  },
+}
+
+// Per-competition trophy names (overrides country defaults): a Serie A win is
+// the "Scudetto" but a Serie B one is the "Serie B" title, etc.
+const LEAGUE_TROPHY_META = {
+  serie_a: { league: { name: 'Scudetto', asset: '/trophies/leagues/serie-b-trophy.svg' } },
+  serie_b: { league: { name: 'Serie B', asset: '/trophies/leagues/serie-b-trophy.svg' } },
+  premier_league: { league: { name: 'Premier League', asset: '/trophies/leagues/premier-league.png' } },
+  championship: { league: { name: 'Championship', asset: '/trophies/leagues/premier-league.png' } },
+  la_liga: { league: { name: 'La Liga', asset: '/trophies/leagues/la-liga.png' } },
+  la_liga_2: { league: { name: 'La Liga 2', asset: '/trophies/leagues/la-liga.png' } },
+  bundesliga: { league: { name: 'Bundesliga', asset: '/trophies/leagues/meisterschale.png' } },
+  zweite_bundesliga: { league: { name: '2. Bundesliga', asset: '/trophies/leagues/meisterschale.png' } },
+  ligue_1: { league: { name: 'Ligue 1', asset: '/trophies/leagues/meisterschale.png' } },
+  ligue_2: { league: { name: 'Ligue 2', asset: '/trophies/leagues/meisterschale.png' } },
 }
 
 const TABLES = {
@@ -95,15 +114,26 @@ export const pickTrophies = (params) => {
   return won
 }
 
-export const trophyLabel = (type, country) => {
-  const meta = (country && COUNTRY_TROPHY_META[country]?.[type]) || TROPHY_META[type]
+const trophyMeta = (type, leagueId, country) => {
+  if (type === 'league') {
+    const byLeague = (leagueId && LEAGUE_TROPHY_META[leagueId]?.league) || (country && COUNTRY_TROPHY_META[country]?.league)
+    return byLeague || TROPHY_META.league
+  }
+  if (type === 'cup') {
+    return (country && COUNTRY_TROPHY_META[country]?.cup) || TROPHY_META.cup
+  }
+  return TROPHY_META[type]
+}
+
+export const trophyLabel = (type, leagueId, country) => {
+  const meta = trophyMeta(type, leagueId, country)
   return meta?.name ?? type
 }
 
-export const trophyAsset = (type, country) => {
-  const meta = (country && COUNTRY_TROPHY_META[country]?.[type]) || TROPHY_META[type]
+export const trophyAsset = (type, leagueId, country) => {
+  const meta = trophyMeta(type, leagueId, country)
   return meta?.asset
 }
 
-// Backwards-compatible: older saves store plain type strings, new ones store { type, country }
-export const normalizeTrophy = (t) => (typeof t === 'string' ? { type: t, country: undefined } : t)
+// Backwards-compatible: older saves store plain type strings, newer ones store { type, leagueId, country }
+export const normalizeTrophy = (t) => (typeof t === 'string' ? { type: t, leagueId: undefined, country: undefined } : t)

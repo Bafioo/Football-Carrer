@@ -13,10 +13,9 @@ const ballonDorProb = (overall) => {
 }
 
 const goldenBootProb = (goals) => {
-  if (goals >= 50) return 1.0
-  if (goals >= 40) return 0.5
-  if (goals >= 30) return 0.25
-  return 0.0
+  if (goals < 35) return 0.0
+  if (goals >= 50) return 0.9
+  return 0.6 + (goals - 35) * (0.3 / 15)
 }
 
 export const tableAt = (table, index) => table[Math.max(0, Math.min(table.length - 1, index))]
