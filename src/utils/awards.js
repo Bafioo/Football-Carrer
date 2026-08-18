@@ -1,6 +1,6 @@
 export const AWARD_META = {
   ballon_dor: { name: 'Pallone d\'Oro', asset: '/trophies/individual/ballon-dor.svg' },
-  golden_glove: { name: 'Guanto d\'Oro', asset: null },
+  golden_glove: { name: 'Guanto d\'Oro', asset: '/trophies/individual/golden-glove.png' },
   golden_boot: { name: 'Scarpa d\'Oro', asset: '/trophies/individual/golden-boot.svg' }
 }
 
