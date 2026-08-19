@@ -575,7 +575,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
             </div>
 
             {/* Trophy cabinet + awards */}
-            <div className="mt-3 w-full">
+            <div className="mt-3 w-full md:w-auto md:shrink-0 md:ml-auto">
               <div className="text-xs font-bold text-mute uppercase mb-1.5">🏆 Trofei</div>
               {trophyCounts.length > 0 ? (
                 <div className="flex flex-wrap gap-2 items-center">
