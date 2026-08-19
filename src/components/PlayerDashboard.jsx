@@ -617,11 +617,11 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-3 mb-5">
-          <button onClick={() => setConfirmReset(true)} className="btn-danger text-xs px-3 py-1.5">
+          <button onClick={() => setConfirmReset(true)} className="btn-danger text-xs px-4 py-2">
             Nuova Carriera
           </button>
           {player.age >= 40 && (
-            <button onClick={() => setShowFinal(true)} className="btn-primary ml-auto py-2 px-4">
+            <button onClick={() => setShowFinal(true)} className="btn-primary text-xs px-4 py-2">
               Riepilogo
             </button>
           )}
