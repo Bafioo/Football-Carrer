@@ -621,7 +621,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
             Nuova Carriera
           </button>
           {player.age >= 40 && (
-            <button onClick={() => setShowFinal(true)} className="btn-primary text-xs px-4 py-2">
+            <button onClick={() => setShowFinal(true)} className="btn-primary ml-auto text-xs px-4 py-2">
               Riepilogo
             </button>
           )}
