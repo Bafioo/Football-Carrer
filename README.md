@@ -35,7 +35,7 @@ and write your own story through simmed seasons, random events, transfers, and l
 - 🎯 **Season-based engine** — no tedious match-by-match clicking. Choose your move, watch a whole season unfold.
 - 🌱 **A living "Gen" (OVR)** — your rating grows with an S-curve as you age, peaks in your prime, and declines after 31.
 - 🎲 **24 role-specific events** — hat-tricks, penalty saves, dressing-room bust-ups, and rare injuries that actually cost you rating.
-- 🧠 **Stats that make sense** — goals, assists, cleansheets and saves are all correlated to your rating with a smoothstep formula. No random noise without reason.
+- 🧠 **Stats that make sense** — goals, assists, cleansheets and saves are all correlated to your rating.
 - 🏟️ **Real football world** — 66 clubs, 10 leagues, 41 nationalities, real flags and club logos.
 - 📱 **Responsive UI** — clean dark "manpage" aesthetic, optimized for desktop and mobile.
 - 💾 **Auto-save** — your whole career lives in `localStorage`. Close the tab, come back, pick up exactly where you left off.
@@ -78,67 +78,11 @@ The big number in the circle. Your player's true quality:
 - 🚑 **Injuries** (the only negative that hurts): -1 to -3 Gen
 - Everything else (red cards, bad form, manager criticism) touches **hidden internal stats only** — never the Gen
 
-### Math behind the magic
-
-Performance is correlated to Gen with a smooth **S-curve**:
-
-```text
-t = (Gen - 50) / 49            clamped to [0, 1]
-factor = 1 + t² · (3 - 2t)     smoothstep
-stat = role_base · factor · noise
-```
-
-| Gen | Factor | Effect |
-|-----|--------|--------|
-| 50  | 1.00   | baseline |
-| 70  | ~1.36  | solid |
-| 80  | ~1.67  | peak push |
-| 99  | 2.00   | double production 💪 |
-
-Each stat rolls its **own noise (±25%)**, so a season can bring few goals but plenty of assists.
-Goalkeepers concede **less** when their rating is high — the factor divides instead of multiplying.
-
-### 🏟️ Team strength matters
-
-Your club's level scales your production — the same player scores far more at a top club than at a minnow:
-
-| Club requirement (OVR) | Production factor |
-|------------------------|:-----------------:|
-| 80+ (top clubs)        | **×1.25**          |
-| 70+ (strong clubs)     | **×1.05**          |
-| 50 (rest of clubs)     | **×0.75**          |
-
-Goals, assists, saves and clean sheets scale up (or down); keepers at big clubs also concede **less**.
-Loans count too — the club you actually play for decides your factor.
-
-### 📉 No guaranteed glory
-
-Even at a top club, roughly **1 in 5 seasons** comes out flat for outfield players: production drops to
-50–65% for that year. A big transfer raises your ceiling — it doesn't remove your off days. Goalkeepers are exempt.
-No stat has a floor: even defenders can draw a blank.
-
-### Base rating coefficients (Gen 50)
-
-| Role | Goals | Assists |
-|------|:-----:|:-------:|
-| ST          | 16 | 5  |
-| LW / RW     | 10 | 12 |
-| CAM         | 8  | 11 |
-| CM          | 6  | 9  |
-| CDM         | 0.5 | 5  |
-| CB          | 0.5 | 0.5 |
-| LB / RB     | 0.5 | 2  |
-| GK          | 0  | 0  |
-
-Plus, keepers track **Saves** (base 70/season) and **Clean sheets** (base 9/season), and play matches a season like everyone else.
-
-Match appearances scale with **overall rating** (~30 games at gen 50, 75+ at gen 90+), are age-aware (teenagers start around half a season and grow into the team by ~20, veterans taper off after 30), and an injury in the year cuts appearances hard.
-
 ---
 
 ## 🗂️ Roles & Visible Stats
 
-The classic 20 hidden stats power the engine, but on screen you only see what matters for your position:
+The classic hidden stats power the engine, but on screen you only see what matters for your position:
 
 | Role band | Visible stats |
 |-----------|----------------|
