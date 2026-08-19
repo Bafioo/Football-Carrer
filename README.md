@@ -65,18 +65,8 @@ Every choice on the Market instantly advances your career by 1 (or 2) seasons, t
 
 ## 🌡️ The Gen (OVR rating)
 
-The big number in the circle. Your player's true quality:
-
-| Age | What happens |
-|-----|--------------|
-| **16 – 25** | 📈 Random growth: **+1 to +4** per season |
-| **26 – 30** | 🧘 Prime: no forced growth, rating moves only via events |
-| **31 – 40** | 📉 Decline: random **-1 to -3** per season |
-
-- Starts at **50**, sealed at **99**
-- 🔥 **Positive events**: +2 to +5 Gen
-- 🚑 **Injuries** (the only negative that hurts): -1 to -3 Gen
-- Everything else (red cards, bad form, manager criticism) touches **hidden internal stats only** — never the Gen
+The big number in the circle. Your player's true quality — it grows through your prime, then fades with age.
+Events, training, and injuries all leave their mark along the way.
 
 ---
 
