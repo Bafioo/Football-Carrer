@@ -34,7 +34,7 @@ const COUNTRY_TROPHY_META = {
 // Per-competition trophy names (overrides country defaults): a Serie A win is
 // the "Scudetto" but a Serie B one is the "Serie B" title, etc.
 const LEAGUE_TROPHY_META = {
-  serie_a: { league: { name: 'Scudetto', asset: '/trophies/leagues/serie-b-trophy.svg' } },
+  serie_a: { league: { name: 'Serie A', asset: '/trophies/leagues/scudetto-trophy.svg' } },
   serie_b: { league: { name: 'Serie B', asset: '/trophies/leagues/serie-b-trophy.svg' } },
   premier_league: { league: { name: 'Premier League', asset: '/trophies/leagues/premier-league.png' } },
   championship: { league: { name: 'Championship', asset: '/trophies/leagues/premier-league.png' } },
