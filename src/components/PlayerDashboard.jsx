@@ -481,11 +481,11 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
   };
 
   const getOverallColor = (ovr) => {
-    if (ovr >= 85) return 'border-success';
-    if (ovr >= 75) return 'border-accent';
-    if (ovr >= 65) return 'border-warning';
-    if (ovr >= 50) return 'border-stone';
-    return 'border-danger';
+    if (ovr >= 85) return 'border-success bg-success/10';
+    if (ovr >= 75) return 'border-accent bg-accent/10';
+    if (ovr >= 65) return 'border-warning bg-warning/10';
+    if (ovr >= 50) return 'border-stone bg-stone/10';
+    return 'border-danger bg-danger/10';
   };
 
   return (
@@ -502,7 +502,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
         <div className="card mb-4 slide-up">
           <div className="flex flex-col md:flex-row gap-5 items-center md:items-start">
             {/* Overall */}
-            <div className={`relative w-28 h-28 md:w-24 md:h-24 rounded-full border-[3px] ${getOverallColor(overall)} bg-surface-soft flex items-center justify-center shrink-0`}>
+            <div className={`relative w-28 h-28 md:w-24 md:h-24 rounded-full border-[3px] ${getOverallColor(overall)} flex items-center justify-center shrink-0`}>
               <div className="text-5xl md:text-4xl font-bold">{overall}</div>
               <div className="absolute -bottom-2 bg-ink text-canvas px-2 py-0.5 rounded-full text-[10px] font-bold">
                 OVR
