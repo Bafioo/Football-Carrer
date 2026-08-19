@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import PlayerCreation from './components/PlayerCreation';
 import PlayerDashboard from './components/PlayerDashboard';
-import { loadGame, saveGame, clearGame, clearPrefs } from './utils/storage';
+import { loadGame, saveGame, clearGame, clearPrefs, savePrefs } from './utils/storage';
 
 export default function App() {
   const [player, setPlayer] = useState(null);
@@ -16,6 +16,7 @@ export default function App() {
   const handleCreatePlayer = (newPlayer) => {
     setPlayer(newPlayer);
     saveGame(newPlayer);
+    savePrefs(newPlayer);
   };
 
   const handleUpdatePlayer = (updated) => {
