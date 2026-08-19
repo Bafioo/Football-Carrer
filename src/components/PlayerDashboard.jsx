@@ -481,6 +481,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
   };
 
   const getOverallColor = (ovr) => {
+    if (ovr >= 95) return 'border-violet bg-violet/10';
     if (ovr >= 85) return 'border-success bg-success/10';
     if (ovr >= 75) return 'border-accent bg-accent/10';
     if (ovr >= 65) return 'border-warning bg-warning/10';

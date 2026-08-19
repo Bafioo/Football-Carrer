@@ -29,6 +29,7 @@ export default {
         'warning-hover': '#cc7f08',
         success: '#30d158',
         'success-hover': '#28a745',
+        violet: '#7c3aed',
       },
       fontFamily: {
         sans: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
