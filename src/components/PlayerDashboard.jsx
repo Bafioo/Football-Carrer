@@ -56,7 +56,7 @@ const goalSeason = (raw, matches) => {
   return Math.round(matches * (0.75 + Math.random() * 0.24));             // ~75-99% of games
 };
 
-export default function PlayerDashboard({ player, onUpdate, onReset }) {
+export default function PlayerDashboard({ player, onUpdate, onReset, onResetKeepPrefs }) {
   const [confirmReset, setConfirmReset] = useState(false);
   const [yearSummary, setYearSummary] = useState(null);
   const [showFinal, setShowFinal] = useState(false);
@@ -1000,7 +1000,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                 <button onClick={() => setShowFinal(false)} className="btn-secondary w-full">
                   [x] Rivedi il profilo
                 </button>
-                <button onClick={onReset} className="btn-primary w-full">
+                <button onClick={onResetKeepPrefs} className="btn-primary w-full">
                   [+] Nuova Carriera
                 </button>
               </div>

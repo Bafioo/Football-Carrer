@@ -29,6 +29,11 @@ export default function App() {
     setPlayer(null);
   };
 
+  const handleResetKeepPrefs = () => {
+    clearGame();
+    setPlayer(null);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -46,6 +51,7 @@ export default function App() {
           player={player}
           onUpdate={handleUpdatePlayer}
           onReset={handleReset}
+          onResetKeepPrefs={handleResetKeepPrefs}
         />
       )}
     </div>
