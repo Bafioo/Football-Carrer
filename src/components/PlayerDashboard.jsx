@@ -576,9 +576,9 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
 
             {/* Trophy cabinet + awards */}
             <div className="mt-3 w-full md:w-auto md:shrink-0 md:ml-auto">
-              <div className="text-xs font-bold text-mute uppercase mb-1.5">🏆 Trofei</div>
+              <div className="text-xs font-bold text-mute uppercase mb-1.5 text-center md:text-left">🏆 Trofei</div>
               {trophyCounts.length > 0 ? (
-                <div className="flex flex-wrap gap-2 items-center">
+                <div className="flex flex-wrap gap-2 items-center justify-center md:justify-start">
                   {trophyCounts.map(({ type, leagueId, country, count }) => (
                     <span
                       key={`${type}|${leagueId || ''}|${country || ''}`}
@@ -591,11 +591,11 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                   ))}
                 </div>
               ) : (
-                <div className="text-xs text-mute">Nessun trofeo vinto</div>
+                <div className="text-xs text-mute text-center md:text-left">Nessun trofeo vinto</div>
               )}
-              <div className="text-xs font-bold text-mute uppercase mb-1.5 mt-2.5">Premi</div>
+              <div className="text-xs font-bold text-mute uppercase mb-1.5 mt-2.5 text-center md:text-left">Premi</div>
               {awardCounts.length > 0 ? (
-                <div className="flex flex-wrap gap-2 items-center">
+                <div className="flex flex-wrap gap-2 items-center justify-center md:justify-start">
                   {awardCounts.map(({ type, count }) => (
                     <span key={type} className="trophy-tile" title={awardLabel(type)}>
                       <img
@@ -608,7 +608,7 @@ export default function PlayerDashboard({ player, onUpdate, onReset }) {
                   ))}
                 </div>
               ) : (
-                <div className="text-xs text-mute">Nessun premio individuale</div>
+                <div className="text-xs text-mute text-center md:text-left">Nessun premio individuale</div>
               )}
             </div>
           </div>
